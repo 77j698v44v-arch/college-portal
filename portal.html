@@ -1,0 +1,307 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>College Student Portal</title>
+  <style>
+    * { box-sizing: border-box; margin: 0; padding: 0; }
+    body { font-family: Arial, sans-serif; background: #f4f6f8; color: #333; }
+    .hidden { display: none; }
+
+    /* Login */
+    #login-page { display: flex; justify-content: center; align-items: center; height: 100vh; }
+    .login-box { background: white; padding: 40px; border-radius: 12px; width: 360px; box-shadow: 0 2px 12px rgba(0,0,0,0.1); }
+    .login-box h2 { text-align: center; margin-bottom: 8px; color: #0F6E56; }
+    .login-box p { text-align: center; color: #666; font-size: 14px; margin-bottom: 24px; }
+    input { width: 100%; padding: 10px 14px; margin-bottom: 14px; border: 1px solid #ddd; border-radius: 8px; font-size: 14px; }
+    button { width: 100%; padding: 11px; background: #0F6E56; color: white; border: none; border-radius: 8px; font-size: 15px; cursor: pointer; }
+    button:hover { background: #0a5442; }
+    .error { color: red; font-size: 13px; margin-bottom: 10px; text-align: center; }
+
+    /* Portal */
+    #portal-page { display: none; }
+    .header { background: #0F6E56; color: white; padding: 14px 24px; display: flex; justify-content: space-between; align-items: center; }
+    .header h1 { font-size: 16px; }
+    .header span { font-size: 13px; opacity: 0.85; }
+    .logout { background: rgba(255,255,255,0.2); padding: 6px 14px; border-radius: 6px; cursor: pointer; font-size: 13px; width: auto; }
+    .nav { display: flex; gap: 4px; background: white; padding: 10px 24px; border-bottom: 1px solid #eee; overflow-x: auto; }
+    .nav button { background: transparent; color: #555; border: none; padding: 8px 16px; border-radius: 6px; cursor: pointer; font-size: 13px; width: auto; }
+    .nav button.active { background: #0F6E56; color: white; }
+    .content { padding: 24px; max-width: 900px; margin: 0 auto; }
+    .section { display: none; }
+    .section.active { display: block; }
+    .card { background: white; border-radius: 10px; padding: 20px; margin-bottom: 16px; box-shadow: 0 1px 4px rgba(0,0,0,0.07); }
+    .card h3 { font-size: 15px; margin-bottom: 16px; color: #0F6E56; }
+    table { width: 100%; border-collapse: collapse; font-size: 13px; }
+    th { text-align: left; padding: 8px 0; border-bottom: 2px solid #eee; color: #666; font-size: 12px; }
+    td { padding: 10px 0; border-bottom: 1px solid #f0f0f0; }
+    tr:last-child td { border-bottom: none; }
+    .badge { padding: 3px 10px; border-radius: 20px; font-size: 11px; font-weight: 600; }
+    .pass { background: #EAF3DE; color: #3B6D11; }
+    .fail { background: #FCEBEB; color: #A32D2D; }
+    .pending { background: #FAEEDA; color: #854F0B; }
+    .stat-grid { display: grid; grid-template-columns: repeat(auto-fit, minmax(140px, 1fr)); gap: 12px; margin-bottom: 20px; }
+    .stat { background: white; border-radius: 10px; padding: 16px; box-shadow: 0 1px 4px rgba(0,0,0,0.07); }
+    .stat .label { font-size: 12px; color: #888; margin-bottom: 6px; }
+    .stat .value { font-size: 24px; font-weight: 600; }
+    .progress-row { display: flex; align-items: center; gap: 12px; margin-bottom: 12px; }
+    .progress-label { font-size: 13px; min-width: 150px; }
+    .progress-bar { flex: 1; height: 8px; background: #eee; border-radius: 4px; overflow: hidden; }
+    .progress-fill { height: 100%; border-radius: 4px; }
+    .pay-form input { margin-bottom: 10px; }
+    .pay-btn { background: #00A651; margin-top: 4px; }
+    .pay-btn:hover { background: #007a3d; }
+    .success { color: green; font-size: 13px; margin-top: 8px; text-align: center; }
+    .loading { text-align: center; color: #888; font-size: 13px; padding: 20px; }
+  </style>
+</head>
+<body>
+
+<!-- LOGIN -->
+<div id="login-page">
+  <div class="login-box">
+    <h2>Student Portal</h2>
+    <p>Gloryca International College</p>
+    <div id="login-error" class="error hidden"></div>
+    <input type="text" id="student-id" placeholder="Student ID (e.g. WC-2024001)" />
+    <input type="password" id="password" placeholder="Password" />
+    <button onclick="login()">Login</button>
+  </div>
+</div>
+
+<!-- PORTAL -->
+<div id="portal-page">
+  <div class="header">
+    <h1>Gloryca International College — Student Portal</h1>
+    <div>
+      <span id="student-name"></span>
+      <button class="logout" onclick="logout()">Logout</button>
+    </div>
+  </div>
+
+  <nav class="nav">
+    <button class="active" onclick="showTab('dashboard')">Dashboard</button>
+    <button onclick="showTab('results')">Exam Results</button>
+    <button onclick="showTab('timetable')">Timetable</button>
+    <button onclick="showTab('fees')">Fees</button>
+    <button onclick="showTab('attendance')">Attendance</button>
+  </nav>
+
+  <div class="content">
+
+    <!-- DASHBOARD -->
+    <div class="section active" id="dashboard">
+      <div class="stat-grid">
+        <div class="stat"><div class="label">Student ID</div><div class="value" style="font-size:16px" id="dash-id">—</div></div>
+        <div class="stat"><div class="label">Fee Balance</div><div class="value" style="color:#A32D2D;font-size:18px" id="dash-balance">—</div></div>
+        <div class="stat"><div class="label">Avg Attendance</div><div class="value" id="dash-attendance">—</div></div>
+        <div class="stat"><div class="label">Results</div><div class="value" id="dash-results">—</div></div>
+      </div>
+      <div class="card">
+        <h3>Welcome back!</h3>
+        <p style="font-size:14px;color:#555">Use the navigation above to view your exam results, timetable, fee balance and attendance records.</p>
+      </div>
+    </div>
+
+    <!-- RESULTS -->
+    <div class="section" id="results">
+      <div class="card">
+        <h3>Exam Results</h3>
+        <div id="results-body"><div class="loading">Loading...</div></div>
+      </div>
+    </div>
+
+    <!-- TIMETABLE -->
+    <div class="section" id="timetable">
+      <div class="card">
+        <h3>Class Timetable</h3>
+        <div id="timetable-body"><div class="loading">Loading...</div></div>
+      </div>
+    </div>
+
+    <!-- FEES -->
+    <div class="section" id="fees">
+      <div class="card">
+        <h3>Fee Balance</h3>
+        <div id="fees-body"><div class="loading">Loading...</div></div>
+      </div>
+      <div class="card">
+        <h3>Pay via M-Pesa</h3>
+        <div class="pay-form">
+          <input type="text" id="pay-phone" placeholder="Phone number (e.g. 254712345678)" />
+          <input type="number" id="pay-amount" placeholder="Amount (KSh)" />
+          <button class="pay-btn" onclick="payFees()">Pay Now</button>
+          <div id="pay-message"></div>
+        </div>
+      </div>
+    </div>
+
+    <!-- ATTENDANCE -->
+    <div class="section" id="attendance">
+      <div class="card">
+        <h3>Attendance by Unit</h3>
+        <div id="attendance-body"><div class="loading">Loading...</div></div>
+      </div>
+    </div>
+
+  </div>
+</div>
+
+<script>
+  const API = 'http://localhost:3000/api'
+  let token = ''
+  let studentId = ''
+
+  async function login() {
+    const id = document.getElementById('student-id').value
+    const pass = document.getElementById('password').value
+    const err = document.getElementById('login-error')
+    err.classList.add('hidden')
+
+    try {
+      const res = await fetch(`${API}/auth/login`, {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({ student_id: id, password: pass })
+      })
+      const data = await res.json()
+      if (!res.ok) { err.textContent = data.error; err.classList.remove('hidden'); return }
+
+      token = data.token
+      studentId = data.student_id
+      document.getElementById('student-name').textContent = data.full_name
+      document.getElementById('dash-id').textContent = data.student_id
+      document.getElementById('login-page').style.display = 'none'
+      document.getElementById('portal-page').style.display = 'block'
+      loadDashboard()
+    } catch (e) {
+      err.textContent = 'Cannot connect to server'; err.classList.remove('hidden')
+    }
+  }
+
+  async function loadDashboard() {
+    const [fees, attendance, results] = await Promise.all([
+      fetch(`${API}/students/${studentId}/fees`).then(r => r.json()),
+      fetch(`${API}/students/${studentId}/attendance`).then(r => r.json()),
+      fetch(`${API}/students/${studentId}/results`).then(r => r.json())
+    ])
+
+    if (fees.length > 0) {
+      const balance = fees.reduce((sum, f) => sum + parseFloat(f.balance), 0)
+      document.getElementById('dash-balance').textContent = `KSh ${balance.toLocaleString()}`
+    }
+    if (attendance.length > 0) {
+      const avg = (attendance.reduce((s, a) => s + parseFloat(a.percentage), 0) / attendance.length).toFixed(1)
+      document.getElementById('dash-attendance').textContent = `${avg}%`
+    }
+    document.getElementById('dash-results').textContent = `${results.length} units`
+  }
+
+  async function loadResults() {
+    const data = await fetch(`${API}/students/${studentId}/results`).then(r => r.json())
+    const el = document.getElementById('results-body')
+    if (!data.length) { el.innerHTML = '<p style="color:#888;font-size:13px">No results yet.</p>'; return }
+    el.innerHTML = `<table>
+      <tr><th>Unit</th><th>CAT</th><th>Exam</th><th>Total</th><th>Grade</th><th>Status</th></tr>
+      ${data.map(r => `<tr>
+        <td>${r.unit_name}</td>
+        <td>${r.cat_score}</td>
+        <td>${r.exam_score}</td>
+        <td>${r.total_score}</td>
+        <td>${r.grade}</td>
+        <td><span class="badge ${parseFloat(r.total_score) >= 50 ? 'pass' : 'fail'}">${parseFloat(r.total_score) >= 50 ? 'Pass' : 'Fail'}</span></td>
+      </tr>`).join('')}
+    </table>`
+  }
+
+  async function loadTimetable() {
+    const data = await fetch(`${API}/students/timetable`).then(r => r.json())
+    const el = document.getElementById('timetable-body')
+    if (!data.length) { el.innerHTML = '<p style="color:#888;font-size:13px">No timetable yet.</p>'; return }
+    el.innerHTML = `<table>
+      <tr><th>Unit</th><th>Day</th><th>Start</th><th>End</th><th>Room</th></tr>
+      ${data.map(t => `<tr>
+        <td>${t.unit_name}</td><td>${t.day}</td>
+        <td>${t.start_time}</td><td>${t.end_time}</td><td>${t.room}</td>
+      </tr>`).join('')}
+    </table>`
+  }
+
+  async function loadFees() {
+    const data = await fetch(`${API}/students/${studentId}/fees`).then(r => r.json())
+    const el = document.getElementById('fees-body')
+    if (!data.length) { el.innerHTML = '<p style="color:#888;font-size:13px">No fee records yet.</p>'; return }
+    el.innerHTML = `<table>
+      <tr><th>Semester</th><th>Total</th><th>Paid</th><th>Balance</th><th>Due Date</th></tr>
+      ${data.map(f => `<tr>
+        <td>${f.semester}</td>
+        <td>KSh ${parseFloat(f.amount).toLocaleString()}</td>
+        <td>KSh ${parseFloat(f.paid).toLocaleString()}</td>
+        <td style="color:#A32D2D;font-weight:600">KSh ${parseFloat(f.balance).toLocaleString()}</td>
+        <td>${new Date(f.due_date).toLocaleDateString()}</td>
+      </tr>`).join('')}
+    </table>`
+  }
+
+  async function loadAttendance() {
+    const data = await fetch(`${API}/students/${studentId}/attendance`).then(r => r.json())
+    const el = document.getElementById('attendance-body')
+    if (!data.length) { el.innerHTML = '<p style="color:#888;font-size:13px">No attendance yet.</p>'; return }
+    el.innerHTML = data.map(a => {
+      const pct = parseFloat(a.percentage)
+      const color = pct >= 75 ? '#1D9E75' : pct >= 60 ? '#BA7517' : '#E24B4A'
+      return `<div class="progress-row">
+        <div class="progress-label">${a.unit_name}</div>
+        <div class="progress-bar"><div class="progress-fill" style="width:${pct}%;background:${color}"></div></div>
+        <div style="font-size:13px;font-weight:600;color:${color};min-width:40px">${pct}%</div>
+      </div>`
+    }).join('')
+  }
+
+  async function payFees() {
+    const phone = document.getElementById('pay-phone').value
+    const amount = document.getElementById('pay-amount').value
+    const msg = document.getElementById('pay-message')
+    msg.textContent = 'Sending payment request...'
+    msg.className = 'loading'
+
+    try {
+      const res = await fetch(`${API}/mpesa/pay`, {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({ student_id: studentId, phone, amount: parseInt(amount) })
+      })
+      const data = await res.json()
+      if (res.ok) {
+        msg.textContent = 'Payment prompt sent to your phone! Enter your M-Pesa PIN to complete.'
+        msg.className = 'success'
+      } else {
+        msg.textContent = data.error
+        msg.className = 'error'
+      }
+    } catch (e) {
+      msg.textContent = 'Payment failed. Try again.'
+      msg.className = 'error'
+    }
+  }
+
+  function showTab(tab) {
+    document.querySelectorAll('.section').forEach(s => s.classList.remove('active'))
+    document.querySelectorAll('.nav button').forEach(b => b.classList.remove('active'))
+    document.getElementById(tab).classList.add('active')
+    event.target.classList.add('active')
+    if (tab === 'results') loadResults()
+    if (tab === 'timetable') loadTimetable()
+    if (tab === 'fees') loadFees()
+    if (tab === 'attendance') loadAttendance()
+  }
+
+  function logout() {
+    token = ''; studentId = ''
+    document.getElementById('portal-page').style.display = 'none'
+    document.getElementById('login-page').style.display = 'flex'
+  }
+</script>
+</body>
+</html>
