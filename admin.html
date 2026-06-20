@@ -48,7 +48,6 @@
 
 <div class="content">
 
-  <!-- STUDENTS LIST -->
   <div class="section active" id="students">
     <div class="card">
       <h3>Register New Student</h3>
@@ -72,7 +71,6 @@
     </div>
   </div>
 
-  <!-- RESULTS -->
   <div class="section" id="results">
     <div class="card">
       <h3>Add Exam Result</h3>
@@ -95,7 +93,6 @@
     </div>
   </div>
 
-  <!-- FEES -->
   <div class="section" id="fees">
     <div class="card">
       <h3>Add Fee Record</h3>
@@ -112,7 +109,6 @@
     </div>
   </div>
 
-  <!-- ATTENDANCE -->
   <div class="section" id="attendance">
     <div class="card">
       <h3>Add / Update Attendance</h3>
@@ -131,7 +127,6 @@
     </div>
   </div>
 
-  <!-- TIMETABLE -->
   <div class="section" id="timetable">
     <div class="card">
       <h3>Add Timetable Entry</h3>
@@ -158,53 +153,66 @@
 </div>
 
 <script>
-const API = 'https://college-portal-production-4e3e.up.railway.app/api'
+  const API = 'https://college-portal-production-4e3e.up.railway.app/api';
+
   function showTab(tab) {
-    document.querySelectorAll('.section').forEach(s => s.classList.remove('active'))
-    document.querySelectorAll('.nav button').forEach(b => b.classList.remove('active'))
-    document.getElementById(tab).classList.add('active')
-    event.target.classList.add('active')
-    if (tab === 'students') loadStudents()
+    document.querySelectorAll('.section').forEach(function(s) { s.classList.remove('active'); });
+    document.querySelectorAll('.nav button').forEach(function(b) { b.classList.remove('active'); });
+    document.getElementById(tab).classList.add('active');
+    event.target.classList.add('active');
+    if (tab === 'students') loadStudents();
   }
 
   function showMsg(el, text, ok) {
-    el.textContent = text
-    el.className = 'msg ' + (ok ? 'success' : 'error')
+    el.textContent = text;
+    el.className = 'msg ' + (ok ? 'success' : 'error');
   }
 
   async function registerStudent() {
-    const body = {
+    var body = {
       student_id: document.getElementById('reg-id').value,
       full_name: document.getElementById('reg-name').value,
       email: document.getElementById('reg-email').value,
       phone: document.getElementById('reg-phone').value,
       password: document.getElementById('reg-password').value
-    }
-    const msg = document.getElementById('reg-msg')
+    };
+    var msg = document.getElementById('reg-msg');
     try {
-      const res = await fetch(`${API}/auth/register`, {
-        method: 'POST', headers: { 'Content-Type': 'application/json' }, body: JSON.stringify(body)
-      })
-      const data = await res.json()
-      showMsg(msg, res.ok ? 'Student registered!' : data.error, res.ok)
-      if (res.ok) loadStudents()
-    } catch (e) { showMsg(msg, 'Connection error', false) }
+      var res = await fetch(API + '/auth/register', {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify(body)
+      });
+      var data = await res.json();
+      showMsg(msg, res.ok ? 'Student registered!' : data.error, res.ok);
+      if (res.ok) loadStudents();
+    } catch (e) {
+      showMsg(msg, 'Connection error', false);
+    }
   }
 
   async function loadStudents() {
-    const el = document.getElementById('students-list')
+    var el = document.getElementById('students-list');
     try {
-      const data = await fetch(`${API}/admin/students`).then(r => r.json())
-      if (!data.length) { el.innerHTML = '<p style="color:#888;font-size:13px">No students yet.</p>'; return }
-      el.innerHTML = `<table>
-        <tr><th>ID</th><th>Name</th><th>Email</th><th>Phone</th></tr>
-        ${data.map(s => `<tr><td>${s.student_id}</td><td>${s.full_name}</td><td>${s.email}</td><td>${s.phone || '—'}</td></tr>`).join('')}
-      </table>`
-    } catch (e) { el.innerHTML = '<p style="color:red;font-size:13px">Could not load students.</p>' }
+      var res = await fetch(API + '/admin/students');
+      var data = await res.json();
+      if (!data.length) {
+        el.innerHTML = '<p style="color:#888;font-size:13px">No students yet.</p>';
+        return;
+      }
+      var rows = '';
+      for (var i = 0; i < data.length; i++) {
+        var s = data[i];
+        rows += '<tr><td>' + s.student_id + '</td><td>' + s.full_name + '</td><td>' + s.email + '</td><td>' + (s.phone || '—') + '</td></tr>';
+      }
+      el.innerHTML = '<table><tr><th>ID</th><th>Name</th><th>Email</th><th>Phone</th></tr>' + rows + '</table>';
+    } catch (e) {
+      el.innerHTML = '<p style="color:red;font-size:13px">Could not load students.</p>';
+    }
   }
 
   async function addResult() {
-    const body = {
+    var body = {
       student_id: document.getElementById('res-id').value,
       unit_name: document.getElementById('res-unit').value,
       cat_score: document.getElementById('res-cat').value,
@@ -212,72 +220,88 @@ const API = 'https://college-portal-production-4e3e.up.railway.app/api'
       total_score: document.getElementById('res-total').value,
       grade: document.getElementById('res-grade').value,
       semester: document.getElementById('res-semester').value
-    }
-    const msg = document.getElementById('res-msg')
+    };
+    var msg = document.getElementById('res-msg');
     try {
-      const res = await fetch(`${API}/admin/results`, {
-        method: 'POST', headers: { 'Content-Type': 'application/json' }, body: JSON.stringify(body)
-      })
-      const data = await res.json()
-      showMsg(msg, res.ok ? 'Result added!' : data.error, res.ok)
-    } catch (e) { showMsg(msg, 'Connection error', false) }
+      var res = await fetch(API + '/admin/results', {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify(body)
+      });
+      var data = await res.json();
+      showMsg(msg, res.ok ? 'Result added!' : data.error, res.ok);
+    } catch (e) {
+      showMsg(msg, 'Connection error', false);
+    }
   }
 
   async function addFee() {
-    const body = {
+    var body = {
       student_id: document.getElementById('fee-id').value,
       amount: document.getElementById('fee-amount').value,
       semester: document.getElementById('fee-semester').value,
       due_date: document.getElementById('fee-due').value
-    }
-    const msg = document.getElementById('fee-msg')
+    };
+    var msg = document.getElementById('fee-msg');
     try {
-      const res = await fetch(`${API}/admin/fees`, {
-        method: 'POST', headers: { 'Content-Type': 'application/json' }, body: JSON.stringify(body)
-      })
-      const data = await res.json()
-      showMsg(msg, res.ok ? 'Fee record added!' : data.error, res.ok)
-    } catch (e) { showMsg(msg, 'Connection error', false) }
+      var res = await fetch(API + '/admin/fees', {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify(body)
+      });
+      var data = await res.json();
+      showMsg(msg, res.ok ? 'Fee record added!' : data.error, res.ok);
+    } catch (e) {
+      showMsg(msg, 'Connection error', false);
+    }
   }
 
   async function addAttendance() {
-    const body = {
+    var body = {
       student_id: document.getElementById('att-id').value,
       unit_name: document.getElementById('att-unit').value,
       classes_attended: document.getElementById('att-attended').value,
       total_classes: document.getElementById('att-total').value,
       semester: document.getElementById('att-semester').value
-    }
-    const msg = document.getElementById('att-msg')
+    };
+    var msg = document.getElementById('att-msg');
     try {
-      const res = await fetch(`${API}/admin/attendance`, {
-        method: 'POST', headers: { 'Content-Type': 'application/json' }, body: JSON.stringify(body)
-      })
-      const data = await res.json()
-      showMsg(msg, res.ok ? 'Attendance saved!' : data.error, res.ok)
-    } catch (e) { showMsg(msg, 'Connection error', false) }
+      var res = await fetch(API + '/admin/attendance', {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify(body)
+      });
+      var data = await res.json();
+      showMsg(msg, res.ok ? 'Attendance saved!' : data.error, res.ok);
+    } catch (e) {
+      showMsg(msg, 'Connection error', false);
+    }
   }
 
   async function addTimetable() {
-    const body = {
+    var body = {
       unit_name: document.getElementById('tt-unit').value,
       day: document.getElementById('tt-day').value,
       start_time: document.getElementById('tt-start').value,
       end_time: document.getElementById('tt-end').value,
       room: document.getElementById('tt-room').value,
       semester: document.getElementById('tt-semester').value
-    }
-    const msg = document.getElementById('tt-msg')
+    };
+    var msg = document.getElementById('tt-msg');
     try {
-      const res = await fetch(`${API}/admin/timetable`, {
-        method: 'POST', headers: { 'Content-Type': 'application/json' }, body: JSON.stringify(body)
-      })
-      const data = await res.json()
-      showMsg(msg, res.ok ? 'Timetable entry added!' : data.error, res.ok)
-    } catch (e) { showMsg(msg, 'Connection error', false) }
+      var res = await fetch(API + '/admin/timetable', {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify(body)
+      });
+      var data = await res.json();
+      showMsg(msg, res.ok ? 'Timetable entry added!' : data.error, res.ok);
+    } catch (e) {
+      showMsg(msg, 'Connection error', false);
+    }
   }
 
-  loadStudents()
+  loadStudents();
 </script>
 </body>
 </html>

@@ -9,7 +9,6 @@
     body { font-family: Arial, sans-serif; background: #f4f6f8; color: #333; }
     .hidden { display: none; }
 
-    /* Login */
     #login-page { display: flex; justify-content: center; align-items: center; height: 100vh; }
     .login-box { background: white; padding: 40px; border-radius: 12px; width: 360px; box-shadow: 0 2px 12px rgba(0,0,0,0.1); }
     .login-box h2 { text-align: center; margin-bottom: 8px; color: #0F6E56; }
@@ -19,7 +18,6 @@
     button:hover { background: #0a5442; }
     .error { color: red; font-size: 13px; margin-bottom: 10px; text-align: center; }
 
-    /* Portal */
     #portal-page { display: none; }
     .header { background: #0F6E56; color: white; padding: 14px 24px; display: flex; justify-content: space-between; align-items: center; }
     .header h1 { font-size: 16px; }
@@ -58,7 +56,6 @@
 </head>
 <body>
 
-<!-- LOGIN -->
 <div id="login-page">
   <div class="login-box">
     <h2>Student Portal</h2>
@@ -70,7 +67,6 @@
   </div>
 </div>
 
-<!-- PORTAL -->
 <div id="portal-page">
   <div class="header">
     <h1>Gloryca International College — Student Portal</h1>
@@ -90,7 +86,6 @@
 
   <div class="content">
 
-    <!-- DASHBOARD -->
     <div class="section active" id="dashboard">
       <div class="stat-grid">
         <div class="stat"><div class="label">Student ID</div><div class="value" style="font-size:16px" id="dash-id">—</div></div>
@@ -104,7 +99,6 @@
       </div>
     </div>
 
-    <!-- RESULTS -->
     <div class="section" id="results">
       <div class="card">
         <h3>Exam Results</h3>
@@ -112,7 +106,6 @@
       </div>
     </div>
 
-    <!-- TIMETABLE -->
     <div class="section" id="timetable">
       <div class="card">
         <h3>Class Timetable</h3>
@@ -120,7 +113,6 @@
       </div>
     </div>
 
-    <!-- FEES -->
     <div class="section" id="fees">
       <div class="card">
         <h3>Fee Balance</h3>
@@ -137,7 +129,6 @@
       </div>
     </div>
 
-    <!-- ATTENDANCE -->
     <div class="section" id="attendance">
       <div class="card">
         <h3>Attendance by Unit</h3>
@@ -149,157 +140,174 @@
 </div>
 
 <script>
-const API = 'https://college-portal-production-4e3e.up.railway.app/api'  let token = ''
-  let studentId = ''
+  const API = 'https://college-portal-production-4e3e.up.railway.app/api';
+  var token = '';
+  var studentId = '';
 
   async function login() {
-    const id = document.getElementById('student-id').value
-    const pass = document.getElementById('password').value
-    const err = document.getElementById('login-error')
-    err.classList.add('hidden')
+    var id = document.getElementById('student-id').value;
+    var pass = document.getElementById('password').value;
+    var err = document.getElementById('login-error');
+    err.classList.add('hidden');
 
     try {
-      const res = await fetch(`${API}/auth/login`, {
+      var res = await fetch(API + '/auth/login', {
         method: 'POST',
         headers: { 'Content-Type': 'application/json' },
         body: JSON.stringify({ student_id: id, password: pass })
-      })
-      const data = await res.json()
-      if (!res.ok) { err.textContent = data.error; err.classList.remove('hidden'); return }
+      });
+      var data = await res.json();
+      if (!res.ok) {
+        err.textContent = data.error;
+        err.classList.remove('hidden');
+        return;
+      }
 
-      token = data.token
-      studentId = data.student_id
-      document.getElementById('student-name').textContent = data.full_name
-      document.getElementById('dash-id').textContent = data.student_id
-      document.getElementById('login-page').style.display = 'none'
-      document.getElementById('portal-page').style.display = 'block'
-      loadDashboard()
+      token = data.token;
+      studentId = data.student_id;
+      document.getElementById('student-name').textContent = data.full_name;
+      document.getElementById('dash-id').textContent = data.student_id;
+      document.getElementById('login-page').style.display = 'none';
+      document.getElementById('portal-page').style.display = 'block';
+      loadDashboard();
     } catch (e) {
-      err.textContent = 'Cannot connect to server'; err.classList.remove('hidden')
+      err.textContent = 'Cannot connect to server';
+      err.classList.remove('hidden');
     }
   }
 
   async function loadDashboard() {
-    const [fees, attendance, results] = await Promise.all([
-      fetch(`${API}/students/${studentId}/fees`).then(r => r.json()),
-      fetch(`${API}/students/${studentId}/attendance`).then(r => r.json()),
-      fetch(`${API}/students/${studentId}/results`).then(r => r.json())
-    ])
+    var feesRes = await fetch(API + '/students/' + studentId + '/fees');
+    var fees = await feesRes.json();
+    var attRes = await fetch(API + '/students/' + studentId + '/attendance');
+    var attendance = await attRes.json();
+    var resultsRes = await fetch(API + '/students/' + studentId + '/results');
+    var results = await resultsRes.json();
 
     if (fees.length > 0) {
-      const balance = fees.reduce((sum, f) => sum + parseFloat(f.balance), 0)
-      document.getElementById('dash-balance').textContent = `KSh ${balance.toLocaleString()}`
+      var balance = 0;
+      for (var i = 0; i < fees.length; i++) { balance += parseFloat(fees[i].balance); }
+      document.getElementById('dash-balance').textContent = 'KSh ' + balance.toLocaleString();
     }
     if (attendance.length > 0) {
-      const avg = (attendance.reduce((s, a) => s + parseFloat(a.percentage), 0) / attendance.length).toFixed(1)
-      document.getElementById('dash-attendance').textContent = `${avg}%`
+      var sum = 0;
+      for (var j = 0; j < attendance.length; j++) { sum += parseFloat(attendance[j].percentage); }
+      var avg = (sum / attendance.length).toFixed(1);
+      document.getElementById('dash-attendance').textContent = avg + '%';
     }
-    document.getElementById('dash-results').textContent = `${results.length} units`
+    document.getElementById('dash-results').textContent = results.length + ' units';
   }
 
   async function loadResults() {
-    const data = await fetch(`${API}/students/${studentId}/results`).then(r => r.json())
-    const el = document.getElementById('results-body')
-    if (!data.length) { el.innerHTML = '<p style="color:#888;font-size:13px">No results yet.</p>'; return }
-    el.innerHTML = `<table>
-      <tr><th>Unit</th><th>CAT</th><th>Exam</th><th>Total</th><th>Grade</th><th>Status</th></tr>
-      ${data.map(r => `<tr>
-        <td>${r.unit_name}</td>
-        <td>${r.cat_score}</td>
-        <td>${r.exam_score}</td>
-        <td>${r.total_score}</td>
-        <td>${r.grade}</td>
-        <td><span class="badge ${parseFloat(r.total_score) >= 50 ? 'pass' : 'fail'}">${parseFloat(r.total_score) >= 50 ? 'Pass' : 'Fail'}</span></td>
-      </tr>`).join('')}
-    </table>`
+    var res = await fetch(API + '/students/' + studentId + '/results');
+    var data = await res.json();
+    var el = document.getElementById('results-body');
+    if (!data.length) {
+      el.innerHTML = '<p style="color:#888;font-size:13px">No results yet.</p>';
+      return;
+    }
+    var rows = '';
+    for (var i = 0; i < data.length; i++) {
+      var r = data[i];
+      var passed = parseFloat(r.total_score) >= 50;
+      rows += '<tr><td>' + r.unit_name + '</td><td>' + r.cat_score + '</td><td>' + r.exam_score + '</td><td>' + r.total_score + '</td><td>' + r.grade + '</td><td><span class="badge ' + (passed ? 'pass' : 'fail') + '">' + (passed ? 'Pass' : 'Fail') + '</span></td></tr>';
+    }
+    el.innerHTML = '<table><tr><th>Unit</th><th>CAT</th><th>Exam</th><th>Total</th><th>Grade</th><th>Status</th></tr>' + rows + '</table>';
   }
 
   async function loadTimetable() {
-    const data = await fetch(`${API}/students/timetable`).then(r => r.json())
-    const el = document.getElementById('timetable-body')
-    if (!data.length) { el.innerHTML = '<p style="color:#888;font-size:13px">No timetable yet.</p>'; return }
-    el.innerHTML = `<table>
-      <tr><th>Unit</th><th>Day</th><th>Start</th><th>End</th><th>Room</th></tr>
-      ${data.map(t => `<tr>
-        <td>${t.unit_name}</td><td>${t.day}</td>
-        <td>${t.start_time}</td><td>${t.end_time}</td><td>${t.room}</td>
-      </tr>`).join('')}
-    </table>`
+    var res = await fetch(API + '/students/timetable');
+    var data = await res.json();
+    var el = document.getElementById('timetable-body');
+    if (!data.length) {
+      el.innerHTML = '<p style="color:#888;font-size:13px">No timetable yet.</p>';
+      return;
+    }
+    var rows = '';
+    for (var i = 0; i < data.length; i++) {
+      var t = data[i];
+      rows += '<tr><td>' + t.unit_name + '</td><td>' + t.day + '</td><td>' + t.start_time + '</td><td>' + t.end_time + '</td><td>' + t.room + '</td></tr>';
+    }
+    el.innerHTML = '<table><tr><th>Unit</th><th>Day</th><th>Start</th><th>End</th><th>Room</th></tr>' + rows + '</table>';
   }
 
   async function loadFees() {
-    const data = await fetch(`${API}/students/${studentId}/fees`).then(r => r.json())
-    const el = document.getElementById('fees-body')
-    if (!data.length) { el.innerHTML = '<p style="color:#888;font-size:13px">No fee records yet.</p>'; return }
-    el.innerHTML = `<table>
-      <tr><th>Semester</th><th>Total</th><th>Paid</th><th>Balance</th><th>Due Date</th></tr>
-      ${data.map(f => `<tr>
-        <td>${f.semester}</td>
-        <td>KSh ${parseFloat(f.amount).toLocaleString()}</td>
-        <td>KSh ${parseFloat(f.paid).toLocaleString()}</td>
-        <td style="color:#A32D2D;font-weight:600">KSh ${parseFloat(f.balance).toLocaleString()}</td>
-        <td>${new Date(f.due_date).toLocaleDateString()}</td>
-      </tr>`).join('')}
-    </table>`
+    var res = await fetch(API + '/students/' + studentId + '/fees');
+    var data = await res.json();
+    var el = document.getElementById('fees-body');
+    if (!data.length) {
+      el.innerHTML = '<p style="color:#888;font-size:13px">No fee records yet.</p>';
+      return;
+    }
+    var rows = '';
+    for (var i = 0; i < data.length; i++) {
+      var f = data[i];
+      rows += '<tr><td>' + f.semester + '</td><td>KSh ' + parseFloat(f.amount).toLocaleString() + '</td><td>KSh ' + parseFloat(f.paid).toLocaleString() + '</td><td style="color:#A32D2D;font-weight:600">KSh ' + parseFloat(f.balance).toLocaleString() + '</td><td>' + new Date(f.due_date).toLocaleDateString() + '</td></tr>';
+    }
+    el.innerHTML = '<table><tr><th>Semester</th><th>Total</th><th>Paid</th><th>Balance</th><th>Due Date</th></tr>' + rows + '</table>';
   }
 
   async function loadAttendance() {
-    const data = await fetch(`${API}/students/${studentId}/attendance`).then(r => r.json())
-    const el = document.getElementById('attendance-body')
-    if (!data.length) { el.innerHTML = '<p style="color:#888;font-size:13px">No attendance yet.</p>'; return }
-    el.innerHTML = data.map(a => {
-      const pct = parseFloat(a.percentage)
-      const color = pct >= 75 ? '#1D9E75' : pct >= 60 ? '#BA7517' : '#E24B4A'
-      return `<div class="progress-row">
-        <div class="progress-label">${a.unit_name}</div>
-        <div class="progress-bar"><div class="progress-fill" style="width:${pct}%;background:${color}"></div></div>
-        <div style="font-size:13px;font-weight:600;color:${color};min-width:40px">${pct}%</div>
-      </div>`
-    }).join('')
+    var res = await fetch(API + '/students/' + studentId + '/attendance');
+    var data = await res.json();
+    var el = document.getElementById('attendance-body');
+    if (!data.length) {
+      el.innerHTML = '<p style="color:#888;font-size:13px">No attendance yet.</p>';
+      return;
+    }
+    var html = '';
+    for (var i = 0; i < data.length; i++) {
+      var a = data[i];
+      var pct = parseFloat(a.percentage);
+      var color = pct >= 75 ? '#1D9E75' : (pct >= 60 ? '#BA7517' : '#E24B4A');
+      html += '<div class="progress-row"><div class="progress-label">' + a.unit_name + '</div><div class="progress-bar"><div class="progress-fill" style="width:' + pct + '%;background:' + color + '"></div></div><div style="font-size:13px;font-weight:600;color:' + color + ';min-width:40px">' + pct + '%</div></div>';
+    }
+    el.innerHTML = html;
   }
 
   async function payFees() {
-    const phone = document.getElementById('pay-phone').value
-    const amount = document.getElementById('pay-amount').value
-    const msg = document.getElementById('pay-message')
-    msg.textContent = 'Sending payment request...'
-    msg.className = 'loading'
+    var phone = document.getElementById('pay-phone').value;
+    var amount = document.getElementById('pay-amount').value;
+    var msg = document.getElementById('pay-message');
+    msg.textContent = 'Sending payment request...';
+    msg.className = 'loading';
 
     try {
-      const res = await fetch(`${API}/mpesa/pay`, {
+      var res = await fetch(API + '/mpesa/pay', {
         method: 'POST',
         headers: { 'Content-Type': 'application/json' },
-        body: JSON.stringify({ student_id: studentId, phone, amount: parseInt(amount) })
-      })
-      const data = await res.json()
+        body: JSON.stringify({ student_id: studentId, phone: phone, amount: parseInt(amount) })
+      });
+      var data = await res.json();
       if (res.ok) {
-        msg.textContent = 'Payment prompt sent to your phone! Enter your M-Pesa PIN to complete.'
-        msg.className = 'success'
+        msg.textContent = 'Payment prompt sent to your phone! Enter your M-Pesa PIN to complete.';
+        msg.className = 'success';
       } else {
-        msg.textContent = data.error
-        msg.className = 'error'
+        msg.textContent = data.error;
+        msg.className = 'error';
       }
     } catch (e) {
-      msg.textContent = 'Payment failed. Try again.'
-      msg.className = 'error'
+      msg.textContent = 'Payment failed. Try again.';
+      msg.className = 'error';
     }
   }
 
   function showTab(tab) {
-    document.querySelectorAll('.section').forEach(s => s.classList.remove('active'))
-    document.querySelectorAll('.nav button').forEach(b => b.classList.remove('active'))
-    document.getElementById(tab).classList.add('active')
-    event.target.classList.add('active')
-    if (tab === 'results') loadResults()
-    if (tab === 'timetable') loadTimetable()
-    if (tab === 'fees') loadFees()
-    if (tab === 'attendance') loadAttendance()
+    document.querySelectorAll('.section').forEach(function(s) { s.classList.remove('active'); });
+    document.querySelectorAll('.nav button').forEach(function(b) { b.classList.remove('active'); });
+    document.getElementById(tab).classList.add('active');
+    event.target.classList.add('active');
+    if (tab === 'results') loadResults();
+    if (tab === 'timetable') loadTimetable();
+    if (tab === 'fees') loadFees();
+    if (tab === 'attendance') loadAttendance();
   }
 
   function logout() {
-    token = ''; studentId = ''
-    document.getElementById('portal-page').style.display = 'none'
-    document.getElementById('login-page').style.display = 'flex'
+    token = '';
+    studentId = '';
+    document.getElementById('portal-page').style.display = 'none';
+    document.getElementById('login-page').style.display = 'flex';
   }
 </script>
 </body>
