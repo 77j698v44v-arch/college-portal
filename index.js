@@ -12,11 +12,13 @@ const authRoutes = require('./routes/auth')
 const studentRoutes = require('./routes/students')
 const mpesaRoutes = require('./routes/mpesa')
 const adminRoutes = require('./routes/admin')
+const employeeRoutes = require('./routes/employees')
 
 app.use('/api/auth', authRoutes)
 app.use('/api/students', studentRoutes)
 app.use('/api/mpesa', mpesaRoutes)
 app.use('/api/admin', adminRoutes)
+app.use('/api/employees', employeeRoutes)
 
 app.get('/', (req, res) => {
   res.json({ message: 'College portal API is running!' })
