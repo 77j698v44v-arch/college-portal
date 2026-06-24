@@ -14,13 +14,13 @@ const pool = new Pool({
 
 // Register a student
 router.post('/register', async (req, res) => {
-  const { student_id, full_name, email, phone, password } = req.body
+  const { student_id, full_name, email, phone, password, course } = req.body
   try {
     const hashedPassword = await bcrypt.hash(password, 10)
     const result = await pool.query(
-      `INSERT INTO students (student_id, full_name, email, phone, password)
-       VALUES ($1, $2, $3, $4, $5) RETURNING student_id, full_name, email`,
-      [student_id, full_name, email, phone, hashedPassword]
+      `INSERT INTO students (student_id, full_name, email, phone, password, course)
+       VALUES ($1, $2, $3, $4, $5, $6) RETURNING student_id, full_name, email, course`,
+      [student_id, full_name, email, phone, hashedPassword, course || null]
     )
     res.json({ message: 'Student registered successfully!', student: result.rows[0] })
   } catch (err) {
@@ -48,7 +48,12 @@ router.post('/login', async (req, res) => {
       process.env.JWT_SECRET,
       { expiresIn: '24h' }
     )
-    res.json({ message: 'Login successful!', token, student_id: student.student_id, full_name: student.full_name })
+    res.json({
+      message: 'Login successful!',
+      token,
+      student_id: student.student_id,
+      full_name: student.full_name
+    })
   } catch (err) {
     res.status(500).json({ error: err.message })
   }

@@ -14,20 +14,21 @@
     .login-box h2 { text-align: center; margin-bottom: 8px; color: #1A1A2E; }
     .login-box p { text-align: center; color: #666; font-size: 14px; margin-bottom: 24px; }
     input, select { width: 100%; padding: 10px 14px; margin-bottom: 14px; border: 1px solid #ddd; border-radius: 8px; font-size: 14px; }
-    button { padding: 11px; background: #1A1A2E; color: white; border: none; border-radius: 8px; font-size: 15px; cursor: pointer; }
+    button { padding: 11px; background: #1A1A2E; color: white; border: none; border-radius: 8px; font-size: 14px; cursor: pointer; }
     button:hover { background: #0f0f1a; }
     .full-btn { width: 100%; }
-    .error { color: red; font-size: 13px; margin-bottom: 10px; text-align: center; }
+    .green-btn { background: #0F6E56; }
+    .green-btn:hover { background: #0a5442; }
+    .error-text { color: red; font-size: 13px; margin-bottom: 10px; text-align: center; }
 
     #admin-page { display: none; }
     .header { background: #1A1A2E; color: white; padding: 16px 24px; display: flex; justify-content: space-between; align-items: center; }
     .header h1 { font-size: 16px; }
-    .header span { font-size: 12px; opacity: 0.75; }
     .logout { background: rgba(255,255,255,0.2); padding: 6px 14px; border-radius: 6px; cursor: pointer; font-size: 13px; }
-    .nav { display: flex; gap: 4px; background: white; padding: 10px 24px; border-bottom: 1px solid #eee; overflow-x: auto; }
+    .nav { display: flex; gap: 4px; background: white; padding: 10px 24px; border-bottom: 1px solid #eee; overflow-x: auto; flex-wrap: wrap; }
     .nav button { background: transparent; color: #555; border: none; padding: 8px 16px; border-radius: 6px; cursor: pointer; font-size: 13px; }
     .nav button.active { background: #1A1A2E; color: white; }
-    .content { padding: 24px; max-width: 800px; margin: 0 auto; }
+    .content { padding: 24px; max-width: 860px; margin: 0 auto; }
     .section { display: none; }
     .section.active { display: block; }
     .card { background: white; border-radius: 10px; padding: 24px; margin-bottom: 20px; box-shadow: 0 1px 4px rgba(0,0,0,0.07); }
@@ -37,12 +38,22 @@
     .msg.success { color: green; }
     .msg.error { color: red; }
     table { width: 100%; border-collapse: collapse; font-size: 13px; margin-top: 10px; }
-    th { text-align: left; padding: 8px 0; border-bottom: 2px solid #eee; color: #666; font-size: 12px; }
-    td { padding: 9px 0; border-bottom: 1px solid #f0f0f0; }
+    th { text-align: left; padding: 8px 6px; border-bottom: 2px solid #eee; color: #666; font-size: 12px; }
+    td { padding: 9px 6px; border-bottom: 1px solid #f0f0f0; vertical-align: middle; }
     .two-col { display: grid; grid-template-columns: 1fr 1fr; gap: 12px; }
+    .three-col { display: grid; grid-template-columns: 1fr 1fr 1fr; gap: 12px; }
     .pill { display: inline-block; font-size: 11px; padding: 2px 8px; border-radius: 20px; font-weight: 600; }
     .pill.chief { background: #FCEBEB; color: #A32D2D; }
     .pill.teacher { background: #E6F1FB; color: #0C447C; }
+    .pill.green { background: #EAF3DE; color: #3B6D11; }
+    .pill.red { background: #FCEBEB; color: #A32D2D; }
+    .stat-grid { display: grid; grid-template-columns: repeat(auto-fit, minmax(160px, 1fr)); gap: 12px; margin-bottom: 20px; }
+    .stat { background: #f9f9f9; border-radius: 8px; padding: 16px; border: 1px solid #eee; }
+    .stat .slabel { font-size: 12px; color: #888; margin-bottom: 6px; }
+    .stat .svalue { font-size: 20px; font-weight: 700; }
+    .small-btn { padding: 5px 10px; font-size: 12px; border-radius: 5px; margin-left: 4px; }
+    .divider { border: none; border-top: 1px solid #eee; margin: 20px 0; }
+    .info-box { background: #E6F1FB; border-radius: 8px; padding: 12px 16px; font-size: 13px; color: #0C447C; margin-bottom: 16px; }
   </style>
 </head>
 <body>
@@ -51,7 +62,7 @@
   <div class="login-box">
     <h2>Staff Login</h2>
     <p>Gloryca International College — Admin Panel</p>
-    <div id="login-error" class="error hidden"></div>
+    <div id="login-error" class="error-text hidden"></div>
     <input type="text" id="emp-code" placeholder="Employee Code (e.g. ADM-001)" />
     <input type="password" id="emp-id" placeholder="ID Number" />
     <button class="full-btn" onclick="employeeLogin()">Login</button>
@@ -62,7 +73,7 @@
   <div class="header">
     <h1>Gloryca International College — Admin Panel</h1>
     <div>
-      <span id="staff-name"></span>
+      <span id="staff-name" style="font-size:13px;opacity:0.85;margin-right:12px"></span>
       <button class="logout" onclick="logout()">Logout</button>
     </div>
   </div>
@@ -71,13 +82,14 @@
 
   <div class="content">
 
+    <!-- RESULTS -->
     <div class="section active" id="results">
       <div class="card">
         <h3>Add Exam Result</h3>
-        <label>Student ID</label>
-        <input type="text" id="res-id" placeholder="WC-2024001" />
-        <label>Unit Name</label>
-        <input type="text" id="res-unit" placeholder="Calculus II" />
+        <div class="two-col">
+          <div><label>Student ID</label><input type="text" id="res-id" placeholder="WC-2024001" /></div>
+          <div><label>Unit Name</label><input type="text" id="res-unit" placeholder="Calculus II" /></div>
+        </div>
         <div class="two-col">
           <div><label>CAT Score</label><input type="number" id="res-cat" placeholder="28" /></div>
           <div><label>Exam Score</label><input type="number" id="res-exam" placeholder="62" /></div>
@@ -91,20 +103,16 @@
         <button class="full-btn" style="margin-top:18px" onclick="addResult()">Add Result</button>
         <div id="res-msg" class="msg"></div>
       </div>
-
-      <div class="card">
-        <h3>My Submitted Results</h3>
-        <div id="my-results-list">Loading...</div>
-      </div>
     </div>
 
+    <!-- ATTENDANCE -->
     <div class="section" id="attendance">
       <div class="card">
         <h3>Add / Update Attendance</h3>
-        <label>Student ID</label>
-        <input type="text" id="att-id" placeholder="WC-2024001" />
-        <label>Unit Name</label>
-        <input type="text" id="att-unit" placeholder="Calculus II" />
+        <div class="two-col">
+          <div><label>Student ID</label><input type="text" id="att-id" placeholder="WC-2024001" /></div>
+          <div><label>Unit Name</label><input type="text" id="att-unit" placeholder="Calculus II" /></div>
+        </div>
         <div class="two-col">
           <div><label>Classes Attended</label><input type="number" id="att-attended" placeholder="22" /></div>
           <div><label>Total Classes</label><input type="number" id="att-total" placeholder="24" /></div>
@@ -116,58 +124,126 @@
       </div>
     </div>
 
+    <!-- FEES -->
     <div class="section" id="fees">
+
+      <!-- Overview dashboard -->
+      <div id="fees-overview-card" class="card">
+        <h3>Fees Overview</h3>
+        <div id="fees-summary-stats" class="stat-grid">
+          <div class="stat"><div class="slabel">Total Billed</div><div class="svalue" id="ov-billed">—</div></div>
+          <div class="stat"><div class="slabel">Total Collected</div><div class="svalue" style="color:#0F6E56" id="ov-paid">—</div></div>
+          <div class="stat"><div class="slabel">Total Outstanding</div><div class="svalue" style="color:#A32D2D" id="ov-balance">—</div></div>
+        </div>
+        <div id="fees-overview-table">Loading...</div>
+      </div>
+
+      <hr class="divider">
+
+      <!-- Record cash payment -->
       <div class="card">
-        <h3>Add Fee Record</h3>
-        <label>Student ID</label>
-        <input type="text" id="fee-id" placeholder="WC-2024001" />
-        <label>Amount (KSh)</label>
-        <input type="number" id="fee-amount" placeholder="85000" />
-        <label>Semester</label>
-        <input type="text" id="fee-semester" placeholder="Semester 2" />
-        <label>Due Date</label>
-        <input type="date" id="fee-due" />
+        <h3>Record Cash Payment</h3>
+        <div class="info-box">Enter the student ID to load their fee records, then record a cash payment against the correct semester.</div>
+        <div class="two-col">
+          <div>
+            <label>Student ID</label>
+            <input type="text" id="cash-student-id" placeholder="WC-2024001" />
+          </div>
+          <div style="display:flex;align-items:flex-end">
+            <button class="full-btn green-btn" onclick="loadStudentFees()">Load Records</button>
+          </div>
+        </div>
+        <div id="student-fee-records" style="margin-top:16px"></div>
+        <div id="cash-pay-form" class="hidden" style="margin-top:16px">
+          <label>Fee Record (Semester)</label>
+          <select id="cash-fee-id"></select>
+          <label>Amount Paid (KSh)</label>
+          <input type="number" id="cash-amount" placeholder="5000" />
+          <button class="full-btn" style="margin-top:12px" onclick="recordCashPayment()">Record Payment</button>
+        </div>
+        <div id="cash-msg" class="msg"></div>
+      </div>
+
+      <hr class="divider">
+
+      <!-- Add fee for one student -->
+      <div class="card">
+        <h3>Add Fee — Single Student</h3>
+        <div class="two-col">
+          <div><label>Student ID</label><input type="text" id="fee-id" placeholder="WC-2024001" /></div>
+          <div><label>Amount (KSh)</label><input type="number" id="fee-amount" placeholder="85000" /></div>
+        </div>
+        <div class="two-col">
+          <div><label>Semester</label><input type="text" id="fee-semester" placeholder="Semester 3" /></div>
+          <div><label>Due Date</label><input type="date" id="fee-due" /></div>
+        </div>
         <button class="full-btn" style="margin-top:18px" onclick="addFee()">Add Fee Record</button>
         <div id="fee-msg" class="msg"></div>
       </div>
+
+      <hr class="divider">
+
+      <!-- Bulk fee by course -->
+      <div class="card">
+        <h3>Bulk Add Fee — By Course</h3>
+        <div class="info-box">This will add a fee record for every student enrolled in the selected course. Students not in this course are unaffected.</div>
+        <label>Course Name (must match exactly as entered on student records)</label>
+        <input type="text" id="bulk-course" placeholder="e.g. Business Information Technology" />
+        <div class="two-col">
+          <div><label>Amount (KSh)</label><input type="number" id="bulk-amount" placeholder="85000" /></div>
+          <div><label>Semester</label><input type="text" id="bulk-semester" placeholder="Semester 3" /></div>
+        </div>
+        <label>Due Date</label>
+        <input type="date" id="bulk-due" />
+        <button class="full-btn" style="margin-top:18px" onclick="bulkAddFee()">Apply to Course</button>
+        <div id="bulk-msg" class="msg"></div>
+      </div>
+
     </div>
 
+    <!-- TIMETABLE -->
     <div class="section" id="timetable">
       <div class="card">
         <h3>Add Timetable Entry</h3>
-        <label>Unit Name</label>
-        <input type="text" id="tt-unit" placeholder="Calculus II" />
-        <label>Day</label>
-        <select id="tt-day">
-          <option>Monday</option><option>Tuesday</option><option>Wednesday</option>
-          <option>Thursday</option><option>Friday</option><option>Saturday</option>
-        </select>
+        <div class="two-col">
+          <div><label>Unit Name</label><input type="text" id="tt-unit" placeholder="Calculus II" /></div>
+          <div>
+            <label>Day</label>
+            <select id="tt-day">
+              <option>Monday</option><option>Tuesday</option><option>Wednesday</option>
+              <option>Thursday</option><option>Friday</option><option>Saturday</option>
+            </select>
+          </div>
+        </div>
         <div class="two-col">
           <div><label>Start Time</label><input type="time" id="tt-start" /></div>
           <div><label>End Time</label><input type="time" id="tt-end" /></div>
         </div>
-        <label>Room</label>
-        <input type="text" id="tt-room" placeholder="LH 4" />
-        <label>Semester</label>
-        <input type="text" id="tt-semester" placeholder="Semester 2" />
+        <div class="two-col">
+          <div><label>Room</label><input type="text" id="tt-room" placeholder="LH 4" /></div>
+          <div><label>Semester</label><input type="text" id="tt-semester" placeholder="Semester 2" /></div>
+        </div>
         <button class="full-btn" style="margin-top:18px" onclick="addTimetable()">Add Entry</button>
         <div id="tt-msg" class="msg"></div>
       </div>
     </div>
 
+    <!-- STUDENTS -->
     <div class="section" id="students">
       <div class="card">
         <h3>Register New Student</h3>
-        <label>Student ID</label>
-        <input type="text" id="reg-id" placeholder="WC-2024002" />
-        <label>Full Name</label>
-        <input type="text" id="reg-name" placeholder="John Doe" />
-        <label>Email</label>
-        <input type="text" id="reg-email" placeholder="john@college.com" />
-        <label>Phone</label>
-        <input type="text" id="reg-phone" placeholder="0712345678" />
-        <label>Password</label>
-        <input type="text" id="reg-password" placeholder="Temporary password" />
+        <div class="two-col">
+          <div><label>Student ID</label><input type="text" id="reg-id" placeholder="WC-2024002" /></div>
+          <div><label>Full Name</label><input type="text" id="reg-name" placeholder="John Doe" /></div>
+        </div>
+        <div class="two-col">
+          <div><label>Email</label><input type="text" id="reg-email" placeholder="john@college.com" /></div>
+          <div><label>Phone</label><input type="text" id="reg-phone" placeholder="0712345678" /></div>
+        </div>
+        <div class="two-col">
+          <div><label>Course</label><input type="text" id="reg-course" placeholder="Business Information Technology" /></div>
+          <div><label>Password</label><input type="text" id="reg-password" placeholder="Temporary password" /></div>
+        </div>
         <button class="full-btn" style="margin-top:18px" onclick="registerStudent()">Register Student</button>
         <div id="reg-msg" class="msg"></div>
       </div>
@@ -178,20 +254,24 @@
       </div>
     </div>
 
+    <!-- EMPLOYEES -->
     <div class="section" id="employees">
       <div class="card">
         <h3>Add Employee</h3>
-        <label>Employee Code</label>
-        <input type="text" id="emp-new-code" placeholder="TCH-001" />
-        <label>Full Name</label>
-        <input type="text" id="emp-new-name" placeholder="Jane Wambui" />
-        <label>ID Number (becomes their password)</label>
-        <input type="text" id="emp-new-idnum" placeholder="12345678" />
-        <label>Role</label>
-        <select id="emp-new-role">
-          <option value="teacher">Teacher</option>
-          <option value="chief_admin">Chief Admin</option>
-        </select>
+        <div class="two-col">
+          <div><label>Employee Code</label><input type="text" id="emp-new-code" placeholder="TCH-001" /></div>
+          <div><label>Full Name</label><input type="text" id="emp-new-name" placeholder="Jane Wambui" /></div>
+        </div>
+        <div class="two-col">
+          <div><label>ID Number (becomes password)</label><input type="text" id="emp-new-idnum" placeholder="12345678" /></div>
+          <div>
+            <label>Role</label>
+            <select id="emp-new-role">
+              <option value="teacher">Teacher</option>
+              <option value="chief_admin">Chief Admin</option>
+            </select>
+          </div>
+        </div>
         <button class="full-btn" style="margin-top:18px" onclick="createEmployee()">Add Employee</button>
         <div id="emp-msg" class="msg"></div>
       </div>
@@ -215,7 +295,6 @@
     var idnum = document.getElementById('emp-id').value;
     var err = document.getElementById('login-error');
     err.classList.add('hidden');
-
     try {
       var res = await fetch(API + '/employees/login', {
         method: 'POST',
@@ -223,12 +302,7 @@
         body: JSON.stringify({ employee_code: code, id_number: idnum })
       });
       var data = await res.json();
-      if (!res.ok) {
-        err.textContent = data.error;
-        err.classList.remove('hidden');
-        return;
-      }
-
+      if (!res.ok) { err.textContent = data.error; err.classList.remove('hidden'); return; }
       myCode = data.employee_code;
       myRole = data.role;
       document.getElementById('staff-name').textContent = data.full_name + ' (' + (data.role === 'chief_admin' ? 'Chief Admin' : 'Teacher') + ')';
@@ -252,6 +326,7 @@
       html += '<button onclick="showTab(\'employees\', event)">Employees</button>';
     }
     nav.innerHTML = html;
+    if (myRole === 'chief_admin') loadFeesOverview();
   }
 
   function showTab(tab, evt) {
@@ -259,15 +334,18 @@
     document.querySelectorAll('.nav button').forEach(function(b) { b.classList.remove('active'); });
     document.getElementById(tab).classList.add('active');
     if (evt) evt.target.classList.add('active');
+    if (tab === 'fees') loadFeesOverview();
     if (tab === 'students') loadStudents();
     if (tab === 'employees') loadEmployees();
   }
 
-  function showMsg(el, text, ok) {
+  function showMsg(elId, text, ok) {
+    var el = document.getElementById(elId);
     el.textContent = text;
     el.className = 'msg ' + (ok ? 'success' : 'error');
   }
 
+  /* --- RESULTS --- */
   async function addResult() {
     var body = {
       student_id: document.getElementById('res-id').value,
@@ -279,20 +357,14 @@
       semester: document.getElementById('res-semester').value,
       requester_code: myCode
     };
-    var msg = document.getElementById('res-msg');
     try {
-      var res = await fetch(API + '/admin/results', {
-        method: 'POST',
-        headers: { 'Content-Type': 'application/json' },
-        body: JSON.stringify(body)
-      });
+      var res = await fetch(API + '/admin/results', { method: 'POST', headers: { 'Content-Type': 'application/json' }, body: JSON.stringify(body) });
       var data = await res.json();
-      showMsg(msg, res.ok ? 'Result added!' : data.error, res.ok);
-    } catch (e) {
-      showMsg(msg, 'Connection error', false);
-    }
+      showMsg('res-msg', res.ok ? 'Result added!' : data.error, res.ok);
+    } catch (e) { showMsg('res-msg', 'Connection error', false); }
   }
 
+  /* --- ATTENDANCE --- */
   async function addAttendance() {
     var body = {
       student_id: document.getElementById('att-id').value,
@@ -302,20 +374,93 @@
       semester: document.getElementById('att-semester').value,
       requester_code: myCode
     };
-    var msg = document.getElementById('att-msg');
     try {
-      var res = await fetch(API + '/admin/attendance', {
-        method: 'POST',
-        headers: { 'Content-Type': 'application/json' },
-        body: JSON.stringify(body)
-      });
+      var res = await fetch(API + '/admin/attendance', { method: 'POST', headers: { 'Content-Type': 'application/json' }, body: JSON.stringify(body) });
       var data = await res.json();
-      showMsg(msg, res.ok ? 'Attendance saved!' : data.error, res.ok);
+      showMsg('att-msg', res.ok ? 'Attendance saved!' : data.error, res.ok);
+    } catch (e) { showMsg('att-msg', 'Connection error', false); }
+  }
+
+  /* --- FEES OVERVIEW --- */
+  async function loadFeesOverview() {
+    try {
+      var res = await fetch(API + '/admin/fees/overview?requester_code=' + myCode);
+      var data = await res.json();
+      if (!res.ok) { document.getElementById('fees-overview-table').innerHTML = '<p style="color:red;font-size:13px">' + data.error + '</p>'; return; }
+
+      var s = data.summary;
+      document.getElementById('ov-billed').textContent = 'KSh ' + parseFloat(s.grand_total).toLocaleString();
+      document.getElementById('ov-paid').textContent = 'KSh ' + parseFloat(s.grand_paid).toLocaleString();
+      document.getElementById('ov-balance').textContent = 'KSh ' + parseFloat(s.grand_balance).toLocaleString();
+
+      if (!data.students.length) {
+        document.getElementById('fees-overview-table').innerHTML = '<p style="color:#888;font-size:13px">No fee records yet.</p>';
+        return;
+      }
+
+      var rows = '';
+      for (var i = 0; i < data.students.length; i++) {
+        var st = data.students[i];
+        var bal = parseFloat(st.total_balance);
+        var pillClass = bal <= 0 ? 'green' : 'red';
+        var pillText = bal <= 0 ? 'Cleared' : 'Owing';
+        rows += '<tr>';
+        rows += '<td>' + st.student_id + '</td>';
+        rows += '<td>' + st.full_name + '</td>';
+        rows += '<td>' + (st.course || '—') + '</td>';
+        rows += '<td>KSh ' + parseFloat(st.total_billed).toLocaleString() + '</td>';
+        rows += '<td style="color:#0F6E56">KSh ' + parseFloat(st.total_paid).toLocaleString() + '</td>';
+        rows += '<td style="color:#A32D2D;font-weight:600">KSh ' + bal.toLocaleString() + '</td>';
+        rows += '<td><span class="pill ' + pillClass + '">' + pillText + '</span></td>';
+        rows += '</tr>';
+      }
+      document.getElementById('fees-overview-table').innerHTML = '<table><tr><th>ID</th><th>Name</th><th>Course</th><th>Billed</th><th>Paid</th><th>Balance</th><th>Status</th></tr>' + rows + '</table>';
     } catch (e) {
-      showMsg(msg, 'Connection error', false);
+      document.getElementById('fees-overview-table').innerHTML = '<p style="color:red;font-size:13px">Could not load overview.</p>';
     }
   }
 
+  /* --- CASH PAYMENT --- */
+  async function loadStudentFees() {
+    var sid = document.getElementById('cash-student-id').value;
+    var el = document.getElementById('student-fee-records');
+    var form = document.getElementById('cash-pay-form');
+    form.classList.add('hidden');
+    el.innerHTML = 'Loading...';
+    try {
+      var res = await fetch(API + '/admin/fees/student/' + sid + '?requester_code=' + myCode);
+      var data = await res.json();
+      if (!res.ok) { el.innerHTML = '<p style="color:red;font-size:13px">' + data.error + '</p>'; return; }
+      if (!data.length) { el.innerHTML = '<p style="color:#888;font-size:13px">No fee records for this student.</p>'; return; }
+
+      var rows = '';
+      var selectOptions = '';
+      for (var i = 0; i < data.length; i++) {
+        var f = data[i];
+        rows += '<tr><td>' + f.semester + '</td><td>KSh ' + parseFloat(f.amount).toLocaleString() + '</td><td style="color:#0F6E56">KSh ' + parseFloat(f.paid).toLocaleString() + '</td><td style="color:#A32D2D;font-weight:600">KSh ' + parseFloat(f.balance).toLocaleString() + '</td></tr>';
+        selectOptions += '<option value="' + f.id + '">' + f.semester + ' — Balance: KSh ' + parseFloat(f.balance).toLocaleString() + '</option>';
+      }
+      el.innerHTML = '<table><tr><th>Semester</th><th>Total</th><th>Paid</th><th>Balance</th></tr>' + rows + '</table>';
+      document.getElementById('cash-fee-id').innerHTML = selectOptions;
+      form.classList.remove('hidden');
+    } catch (e) {
+      el.innerHTML = '<p style="color:red;font-size:13px">Connection error.</p>';
+    }
+  }
+
+  async function recordCashPayment() {
+    var feeId = document.getElementById('cash-fee-id').value;
+    var amount = document.getElementById('cash-amount').value;
+    var body = { amount_paid: amount, requester_code: myCode };
+    try {
+      var res = await fetch(API + '/admin/fees/' + feeId + '/pay', { method: 'PUT', headers: { 'Content-Type': 'application/json' }, body: JSON.stringify(body) });
+      var data = await res.json();
+      showMsg('cash-msg', res.ok ? 'Cash payment of KSh ' + parseFloat(amount).toLocaleString() + ' recorded!' : data.error, res.ok);
+      if (res.ok) { loadStudentFees(); loadFeesOverview(); }
+    } catch (e) { showMsg('cash-msg', 'Connection error', false); }
+  }
+
+  /* --- ADD SINGLE FEE --- */
   async function addFee() {
     var body = {
       student_id: document.getElementById('fee-id').value,
@@ -324,20 +469,32 @@
       due_date: document.getElementById('fee-due').value,
       requester_code: myCode
     };
-    var msg = document.getElementById('fee-msg');
     try {
-      var res = await fetch(API + '/admin/fees', {
-        method: 'POST',
-        headers: { 'Content-Type': 'application/json' },
-        body: JSON.stringify(body)
-      });
+      var res = await fetch(API + '/admin/fees', { method: 'POST', headers: { 'Content-Type': 'application/json' }, body: JSON.stringify(body) });
       var data = await res.json();
-      showMsg(msg, res.ok ? 'Fee record added!' : data.error, res.ok);
-    } catch (e) {
-      showMsg(msg, 'Connection error', false);
-    }
+      showMsg('fee-msg', res.ok ? 'Fee record added!' : data.error, res.ok);
+      if (res.ok) loadFeesOverview();
+    } catch (e) { showMsg('fee-msg', 'Connection error', false); }
   }
 
+  /* --- BULK FEE BY COURSE --- */
+  async function bulkAddFee() {
+    var body = {
+      course: document.getElementById('bulk-course').value,
+      amount: document.getElementById('bulk-amount').value,
+      semester: document.getElementById('bulk-semester').value,
+      due_date: document.getElementById('bulk-due').value,
+      requester_code: myCode
+    };
+    try {
+      var res = await fetch(API + '/admin/fees/bulk', { method: 'POST', headers: { 'Content-Type': 'application/json' }, body: JSON.stringify(body) });
+      var data = await res.json();
+      showMsg('bulk-msg', res.ok ? data.message : data.error, res.ok);
+      if (res.ok) loadFeesOverview();
+    } catch (e) { showMsg('bulk-msg', 'Connection error', false); }
+  }
+
+  /* --- TIMETABLE --- */
   async function addTimetable() {
     var body = {
       unit_name: document.getElementById('tt-unit').value,
@@ -348,41 +505,29 @@
       semester: document.getElementById('tt-semester').value,
       requester_code: myCode
     };
-    var msg = document.getElementById('tt-msg');
     try {
-      var res = await fetch(API + '/admin/timetable', {
-        method: 'POST',
-        headers: { 'Content-Type': 'application/json' },
-        body: JSON.stringify(body)
-      });
+      var res = await fetch(API + '/admin/timetable', { method: 'POST', headers: { 'Content-Type': 'application/json' }, body: JSON.stringify(body) });
       var data = await res.json();
-      showMsg(msg, res.ok ? 'Timetable entry added!' : data.error, res.ok);
-    } catch (e) {
-      showMsg(msg, 'Connection error', false);
-    }
+      showMsg('tt-msg', res.ok ? 'Timetable entry added!' : data.error, res.ok);
+    } catch (e) { showMsg('tt-msg', 'Connection error', false); }
   }
 
+  /* --- STUDENTS --- */
   async function registerStudent() {
     var body = {
       student_id: document.getElementById('reg-id').value,
       full_name: document.getElementById('reg-name').value,
       email: document.getElementById('reg-email').value,
       phone: document.getElementById('reg-phone').value,
+      course: document.getElementById('reg-course').value,
       password: document.getElementById('reg-password').value
     };
-    var msg = document.getElementById('reg-msg');
     try {
-      var res = await fetch(API + '/auth/register', {
-        method: 'POST',
-        headers: { 'Content-Type': 'application/json' },
-        body: JSON.stringify(body)
-      });
+      var res = await fetch(API + '/auth/register', { method: 'POST', headers: { 'Content-Type': 'application/json' }, body: JSON.stringify(body) });
       var data = await res.json();
-      showMsg(msg, res.ok ? 'Student registered!' : data.error, res.ok);
+      showMsg('reg-msg', res.ok ? 'Student registered!' : data.error, res.ok);
       if (res.ok) loadStudents();
-    } catch (e) {
-      showMsg(msg, 'Connection error', false);
-    }
+    } catch (e) { showMsg('reg-msg', 'Connection error', false); }
   }
 
   async function loadStudents() {
@@ -395,14 +540,13 @@
       var rows = '';
       for (var i = 0; i < data.length; i++) {
         var s = data[i];
-        rows += '<tr><td>' + s.student_id + '</td><td>' + s.full_name + '</td><td>' + s.email + '</td><td>' + (s.phone || '—') + '</td></tr>';
+        rows += '<tr><td>' + s.student_id + '</td><td>' + s.full_name + '</td><td>' + (s.course || '—') + '</td><td>' + s.email + '</td><td>' + (s.phone || '—') + '</td></tr>';
       }
-      el.innerHTML = '<table><tr><th>ID</th><th>Name</th><th>Email</th><th>Phone</th></tr>' + rows + '</table>';
-    } catch (e) {
-      el.innerHTML = '<p style="color:red;font-size:13px">Could not load students.</p>';
-    }
+      el.innerHTML = '<table><tr><th>ID</th><th>Name</th><th>Course</th><th>Email</th><th>Phone</th></tr>' + rows + '</table>';
+    } catch (e) { el.innerHTML = '<p style="color:red;font-size:13px">Could not load.</p>'; }
   }
 
+  /* --- EMPLOYEES --- */
   async function createEmployee() {
     var body = {
       employee_code: document.getElementById('emp-new-code').value,
@@ -411,19 +555,12 @@
       role: document.getElementById('emp-new-role').value,
       requester_code: myCode
     };
-    var msg = document.getElementById('emp-msg');
     try {
-      var res = await fetch(API + '/employees/create', {
-        method: 'POST',
-        headers: { 'Content-Type': 'application/json' },
-        body: JSON.stringify(body)
-      });
+      var res = await fetch(API + '/employees/create', { method: 'POST', headers: { 'Content-Type': 'application/json' }, body: JSON.stringify(body) });
       var data = await res.json();
-      showMsg(msg, res.ok ? 'Employee added!' : data.error, res.ok);
+      showMsg('emp-msg', res.ok ? 'Employee added!' : data.error, res.ok);
       if (res.ok) loadEmployees();
-    } catch (e) {
-      showMsg(msg, 'Connection error', false);
-    }
+    } catch (e) { showMsg('emp-msg', 'Connection error', false); }
   }
 
   async function loadEmployees() {
@@ -440,14 +577,11 @@
         rows += '<tr><td>' + e.employee_code + '</td><td>' + e.full_name + '</td><td><span class="pill ' + pillClass + '">' + pillText + '</span></td></tr>';
       }
       el.innerHTML = '<table><tr><th>Code</th><th>Name</th><th>Role</th></tr>' + rows + '</table>';
-    } catch (e) {
-      el.innerHTML = '<p style="color:red;font-size:13px">Could not load employees.</p>';
-    }
+    } catch (e) { el.innerHTML = '<p style="color:red;font-size:13px">Could not load.</p>'; }
   }
 
   function logout() {
-    myCode = '';
-    myRole = '';
+    myCode = ''; myRole = '';
     document.getElementById('admin-page').style.display = 'none';
     document.getElementById('login-page').style.display = 'flex';
     document.getElementById('emp-code').value = '';
