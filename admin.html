@@ -8,7 +8,6 @@
     * { box-sizing: border-box; margin: 0; padding: 0; }
     body { font-family: Arial, sans-serif; background: #f4f6f8; color: #333; }
     .hidden { display: none; }
-
     #login-page { display: flex; justify-content: center; align-items: center; height: 100vh; }
     .login-box { background: white; padding: 40px; border-radius: 12px; width: 360px; box-shadow: 0 2px 12px rgba(0,0,0,0.1); }
     .login-box h2 { text-align: center; margin-bottom: 8px; color: #1A1A2E; }
@@ -20,7 +19,6 @@
     .green-btn { background: #0F6E56; }
     .green-btn:hover { background: #0a5442; }
     .error-text { color: red; font-size: 13px; margin-bottom: 10px; text-align: center; }
-
     #admin-page { display: none; }
     .header { background: #1A1A2E; color: white; padding: 16px 24px; display: flex; justify-content: space-between; align-items: center; }
     .header h1 { font-size: 16px; }
@@ -28,7 +26,7 @@
     .nav { display: flex; gap: 4px; background: white; padding: 10px 24px; border-bottom: 1px solid #eee; overflow-x: auto; flex-wrap: wrap; }
     .nav button { background: transparent; color: #555; border: none; padding: 8px 16px; border-radius: 6px; cursor: pointer; font-size: 13px; }
     .nav button.active { background: #1A1A2E; color: white; }
-    .content { padding: 24px; max-width: 860px; margin: 0 auto; }
+    .content { padding: 24px; max-width: 900px; margin: 0 auto; }
     .section { display: none; }
     .section.active { display: block; }
     .card { background: white; border-radius: 10px; padding: 24px; margin-bottom: 20px; box-shadow: 0 1px 4px rgba(0,0,0,0.07); }
@@ -41,7 +39,6 @@
     th { text-align: left; padding: 8px 6px; border-bottom: 2px solid #eee; color: #666; font-size: 12px; }
     td { padding: 9px 6px; border-bottom: 1px solid #f0f0f0; vertical-align: middle; }
     .two-col { display: grid; grid-template-columns: 1fr 1fr; gap: 12px; }
-    .three-col { display: grid; grid-template-columns: 1fr 1fr 1fr; gap: 12px; }
     .pill { display: inline-block; font-size: 11px; padding: 2px 8px; border-radius: 20px; font-weight: 600; }
     .pill.chief { background: #FCEBEB; color: #A32D2D; }
     .pill.teacher { background: #E6F1FB; color: #0C447C; }
@@ -51,9 +48,15 @@
     .stat { background: #f9f9f9; border-radius: 8px; padding: 16px; border: 1px solid #eee; }
     .stat .slabel { font-size: 12px; color: #888; margin-bottom: 6px; }
     .stat .svalue { font-size: 20px; font-weight: 700; }
-    .small-btn { padding: 5px 10px; font-size: 12px; border-radius: 5px; margin-left: 4px; }
     .divider { border: none; border-top: 1px solid #eee; margin: 20px 0; }
     .info-box { background: #E6F1FB; border-radius: 8px; padding: 12px 16px; font-size: 13px; color: #0C447C; margin-bottom: 16px; }
+    .editable-balance { cursor: pointer; border-radius: 4px; padding: 2px 6px; }
+    .editable-balance:hover { background: #fff3cd; }
+    .editable-balance input { width: 100px; padding: 4px 6px; font-size: 13px; margin: 0; }
+    .subnav { display: flex; gap: 6px; margin-bottom: 16px; flex-wrap: wrap; }
+    .subnav button { background: #eee; color: #555; font-size: 12px; padding: 6px 14px; border-radius: 20px; }
+    .subnav button.active { background: #1A1A2E; color: white; }
+    .small-text { font-size: 12px; color: #888; }
   </style>
 </head>
 <body>
@@ -82,7 +85,6 @@
 
   <div class="content">
 
-    <!-- RESULTS -->
     <div class="section active" id="results">
       <div class="card">
         <h3>Add Exam Result</h3>
@@ -105,7 +107,6 @@
       </div>
     </div>
 
-    <!-- ATTENDANCE -->
     <div class="section" id="attendance">
       <div class="card">
         <h3>Add / Update Attendance</h3>
@@ -124,12 +125,9 @@
       </div>
     </div>
 
-    <!-- FEES -->
     <div class="section" id="fees">
-
-      <!-- Overview dashboard -->
       <div id="fees-overview-card" class="card">
-        <h3>Fees Overview</h3>
+        <h3>Fees Overview <span class="small-text">(click any balance to edit it directly)</span></h3>
         <div id="fees-summary-stats" class="stat-grid">
           <div class="stat"><div class="slabel">Total Billed</div><div class="svalue" id="ov-billed">—</div></div>
           <div class="stat"><div class="slabel">Total Collected</div><div class="svalue" style="color:#0F6E56" id="ov-paid">—</div></div>
@@ -140,18 +138,12 @@
 
       <hr class="divider">
 
-      <!-- Record cash payment -->
       <div class="card">
         <h3>Record Cash Payment</h3>
         <div class="info-box">Enter the student ID to load their fee records, then record a cash payment against the correct semester.</div>
         <div class="two-col">
-          <div>
-            <label>Student ID</label>
-            <input type="text" id="cash-student-id" placeholder="WC-2024001" />
-          </div>
-          <div style="display:flex;align-items:flex-end">
-            <button class="full-btn green-btn" onclick="loadStudentFees()">Load Records</button>
-          </div>
+          <div><label>Student ID</label><input type="text" id="cash-student-id" placeholder="WC-2024001" /></div>
+          <div style="display:flex;align-items:flex-end"><button class="full-btn green-btn" onclick="loadStudentFees()">Load Records</button></div>
         </div>
         <div id="student-fee-records" style="margin-top:16px"></div>
         <div id="cash-pay-form" class="hidden" style="margin-top:16px">
@@ -166,7 +158,6 @@
 
       <hr class="divider">
 
-      <!-- Add fee for one student -->
       <div class="card">
         <h3>Add Fee — Single Student</h3>
         <div class="two-col">
@@ -183,11 +174,10 @@
 
       <hr class="divider">
 
-      <!-- Bulk fee by course -->
       <div class="card">
         <h3>Bulk Add Fee — By Course</h3>
-        <div class="info-box">This will add a fee record for every student enrolled in the selected course. Students not in this course are unaffected.</div>
-        <label>Course Name (must match exactly as entered on student records)</label>
+        <div class="info-box">This will add a fee record for every student enrolled in the selected course.</div>
+        <label>Course Name (must match exactly)</label>
         <input type="text" id="bulk-course" placeholder="e.g. Business Information Technology" />
         <div class="two-col">
           <div><label>Amount (KSh)</label><input type="number" id="bulk-amount" placeholder="85000" /></div>
@@ -198,17 +188,83 @@
         <button class="full-btn" style="margin-top:18px" onclick="bulkAddFee()">Apply to Course</button>
         <div id="bulk-msg" class="msg"></div>
       </div>
-
     </div>
 
-    <!-- TIMETABLE -->
+    <div class="section" id="exams">
+      <div class="card">
+        <h3>Exam & Materials Fees</h3>
+        <div class="info-box">These are tracked completely separately from school fees. Choose a category below.</div>
+        <div class="subnav">
+          <button class="active" onclick="switchExamType('national_exam', event)">National Exams</button>
+          <button onclick="switchExamType('internal_exam', event)">Internal Exams</button>
+          <button onclick="switchExamType('ream_papers_files', event)">Ream Papers & Files</button>
+        </div>
+        <label>Student ID</label>
+        <input type="text" id="exam-fee-id" placeholder="WC-2024001" />
+        <div class="two-col">
+          <div><label>Amount (KSh)</label><input type="number" id="exam-fee-amount" placeholder="2000" /></div>
+          <div><label>Semester</label><input type="text" id="exam-fee-semester" placeholder="Semester 2" /></div>
+        </div>
+        <button class="full-btn" style="margin-top:18px" onclick="addExamFee()">Add Arrears Record</button>
+        <div id="exam-fee-msg" class="msg"></div>
+      </div>
+
+      <div class="card">
+        <h3>Record Payment Toward Exam/Materials Fee</h3>
+        <div class="two-col">
+          <div><label>Student ID</label><input type="text" id="exam-pay-student-id" placeholder="WC-2024001" /></div>
+          <div style="display:flex;align-items:flex-end"><button class="full-btn green-btn" onclick="loadExamFeesForStudent()">Load Records</button></div>
+        </div>
+        <div id="exam-fee-records" style="margin-top:16px"></div>
+        <div id="exam-pay-form" class="hidden" style="margin-top:16px">
+          <label>Record</label>
+          <select id="exam-pay-fee-id"></select>
+          <label>Amount Paid (KSh)</label>
+          <input type="number" id="exam-pay-amount" placeholder="500" />
+          <button class="full-btn" style="margin-top:12px" onclick="recordExamPayment()">Record Payment</button>
+        </div>
+        <div id="exam-pay-msg" class="msg"></div>
+      </div>
+    </div>
+
+    <div class="section" id="hostel">
+      <div class="card">
+        <h3>Register Student to Hostel</h3>
+        <div class="info-box">Only students registered here will show a hostel balance. All other students show "Nil" automatically.</div>
+        <div class="two-col">
+          <div><label>Student ID</label><input type="text" id="hostel-id" placeholder="WC-2024001" /></div>
+          <div><label>Room Details</label><input type="text" id="hostel-room" placeholder="Block A, Room 12" /></div>
+        </div>
+        <div class="two-col">
+          <div><label>Amount (KSh)</label><input type="number" id="hostel-amount" placeholder="15000" /></div>
+          <div><label>Semester</label><input type="text" id="hostel-semester" placeholder="Semester 2" /></div>
+        </div>
+        <button class="full-btn" style="margin-top:18px" onclick="registerHostel()">Register to Hostel</button>
+        <div id="hostel-msg" class="msg"></div>
+      </div>
+
+      <div class="card">
+        <h3>Hostel-Registered Students</h3>
+        <div id="hostel-list">Loading...</div>
+      </div>
+
+      <div class="card">
+        <h3>Record Hostel Payment</h3>
+        <div class="two-col">
+          <div><label>Student ID</label><input type="text" id="hostel-pay-id" placeholder="WC-2024001" /></div>
+          <div><label>Amount Paid (KSh)</label><input type="number" id="hostel-pay-amount" placeholder="5000" /></div>
+        </div>
+        <button class="full-btn" style="margin-top:18px" onclick="recordHostelPayment()">Record Payment</button>
+        <div id="hostel-pay-msg" class="msg"></div>
+      </div>
+    </div>
+
     <div class="section" id="timetable">
       <div class="card">
         <h3>Add Timetable Entry</h3>
         <div class="two-col">
           <div><label>Unit Name</label><input type="text" id="tt-unit" placeholder="Calculus II" /></div>
-          <div>
-            <label>Day</label>
+          <div><label>Day</label>
             <select id="tt-day">
               <option>Monday</option><option>Tuesday</option><option>Wednesday</option>
               <option>Thursday</option><option>Friday</option><option>Saturday</option>
@@ -228,7 +284,6 @@
       </div>
     </div>
 
-    <!-- STUDENTS -->
     <div class="section" id="students">
       <div class="card">
         <h3>Register New Student</h3>
@@ -254,7 +309,6 @@
       </div>
     </div>
 
-    <!-- EMPLOYEES -->
     <div class="section" id="employees">
       <div class="card">
         <h3>Add Employee</h3>
@@ -264,8 +318,7 @@
         </div>
         <div class="two-col">
           <div><label>ID Number (becomes password)</label><input type="text" id="emp-new-idnum" placeholder="12345678" /></div>
-          <div>
-            <label>Role</label>
+          <div><label>Role</label>
             <select id="emp-new-role">
               <option value="teacher">Teacher</option>
               <option value="chief_admin">Chief Admin</option>
@@ -289,6 +342,7 @@
   var API = 'https://college-portal-production-4e3e.up.railway.app/api';
   var myCode = '';
   var myRole = '';
+  var currentExamType = 'national_exam';
 
   async function employeeLogin() {
     var code = document.getElementById('emp-code').value;
@@ -296,11 +350,7 @@
     var err = document.getElementById('login-error');
     err.classList.add('hidden');
     try {
-      var res = await fetch(API + '/employees/login', {
-        method: 'POST',
-        headers: { 'Content-Type': 'application/json' },
-        body: JSON.stringify({ employee_code: code, id_number: idnum })
-      });
+      var res = await fetch(API + '/employees/login', { method: 'POST', headers: { 'Content-Type': 'application/json' }, body: JSON.stringify({ employee_code: code, id_number: idnum }) });
       var data = await res.json();
       if (!res.ok) { err.textContent = data.error; err.classList.remove('hidden'); return; }
       myCode = data.employee_code;
@@ -309,10 +359,7 @@
       document.getElementById('login-page').style.display = 'none';
       document.getElementById('admin-page').style.display = 'block';
       buildNav();
-    } catch (e) {
-      err.textContent = 'Cannot connect to server';
-      err.classList.remove('hidden');
-    }
+    } catch (e) { err.textContent = 'Cannot connect to server'; err.classList.remove('hidden'); }
   }
 
   function buildNav() {
@@ -321,6 +368,8 @@
     html += '<button onclick="showTab(\'attendance\', event)">Attendance</button>';
     if (myRole === 'chief_admin') {
       html += '<button onclick="showTab(\'fees\', event)">Fees</button>';
+      html += '<button onclick="showTab(\'exams\', event)">Exams</button>';
+      html += '<button onclick="showTab(\'hostel\', event)">Hostel</button>';
       html += '<button onclick="showTab(\'timetable\', event)">Timetable</button>';
       html += '<button onclick="showTab(\'students\', event)">Students</button>';
       html += '<button onclick="showTab(\'employees\', event)">Employees</button>';
@@ -337,6 +386,7 @@
     if (tab === 'fees') loadFeesOverview();
     if (tab === 'students') loadStudents();
     if (tab === 'employees') loadEmployees();
+    if (tab === 'hostel') loadHostelList();
   }
 
   function showMsg(elId, text, ok) {
@@ -345,59 +395,26 @@
     el.className = 'msg ' + (ok ? 'success' : 'error');
   }
 
-  /* --- RESULTS --- */
   async function addResult() {
-    var body = {
-      student_id: document.getElementById('res-id').value,
-      unit_name: document.getElementById('res-unit').value,
-      cat_score: document.getElementById('res-cat').value,
-      exam_score: document.getElementById('res-exam').value,
-      total_score: document.getElementById('res-total').value,
-      grade: document.getElementById('res-grade').value,
-      semester: document.getElementById('res-semester').value,
-      requester_code: myCode
-    };
-    try {
-      var res = await fetch(API + '/admin/results', { method: 'POST', headers: { 'Content-Type': 'application/json' }, body: JSON.stringify(body) });
-      var data = await res.json();
-      showMsg('res-msg', res.ok ? 'Result added!' : data.error, res.ok);
-    } catch (e) { showMsg('res-msg', 'Connection error', false); }
+    var body = { student_id: document.getElementById('res-id').value, unit_name: document.getElementById('res-unit').value, cat_score: document.getElementById('res-cat').value, exam_score: document.getElementById('res-exam').value, total_score: document.getElementById('res-total').value, grade: document.getElementById('res-grade').value, semester: document.getElementById('res-semester').value, requester_code: myCode };
+    try { var res = await fetch(API + '/admin/results', { method: 'POST', headers: { 'Content-Type': 'application/json' }, body: JSON.stringify(body) }); var data = await res.json(); showMsg('res-msg', res.ok ? 'Result added!' : data.error, res.ok); } catch (e) { showMsg('res-msg', 'Connection error', false); }
   }
 
-  /* --- ATTENDANCE --- */
   async function addAttendance() {
-    var body = {
-      student_id: document.getElementById('att-id').value,
-      unit_name: document.getElementById('att-unit').value,
-      classes_attended: document.getElementById('att-attended').value,
-      total_classes: document.getElementById('att-total').value,
-      semester: document.getElementById('att-semester').value,
-      requester_code: myCode
-    };
-    try {
-      var res = await fetch(API + '/admin/attendance', { method: 'POST', headers: { 'Content-Type': 'application/json' }, body: JSON.stringify(body) });
-      var data = await res.json();
-      showMsg('att-msg', res.ok ? 'Attendance saved!' : data.error, res.ok);
-    } catch (e) { showMsg('att-msg', 'Connection error', false); }
+    var body = { student_id: document.getElementById('att-id').value, unit_name: document.getElementById('att-unit').value, classes_attended: document.getElementById('att-attended').value, total_classes: document.getElementById('att-total').value, semester: document.getElementById('att-semester').value, requester_code: myCode };
+    try { var res = await fetch(API + '/admin/attendance', { method: 'POST', headers: { 'Content-Type': 'application/json' }, body: JSON.stringify(body) }); var data = await res.json(); showMsg('att-msg', res.ok ? 'Attendance saved!' : data.error, res.ok); } catch (e) { showMsg('att-msg', 'Connection error', false); }
   }
 
-  /* --- FEES OVERVIEW --- */
   async function loadFeesOverview() {
     try {
       var res = await fetch(API + '/admin/fees/overview?requester_code=' + myCode);
       var data = await res.json();
       if (!res.ok) { document.getElementById('fees-overview-table').innerHTML = '<p style="color:red;font-size:13px">' + data.error + '</p>'; return; }
-
       var s = data.summary;
       document.getElementById('ov-billed').textContent = 'KSh ' + parseFloat(s.grand_total).toLocaleString();
       document.getElementById('ov-paid').textContent = 'KSh ' + parseFloat(s.grand_paid).toLocaleString();
       document.getElementById('ov-balance').textContent = 'KSh ' + parseFloat(s.grand_balance).toLocaleString();
-
-      if (!data.students.length) {
-        document.getElementById('fees-overview-table').innerHTML = '<p style="color:#888;font-size:13px">No fee records yet.</p>';
-        return;
-      }
-
+      if (!data.students.length) { document.getElementById('fees-overview-table').innerHTML = '<p style="color:#888;font-size:13px">No fee records yet.</p>'; return; }
       var rows = '';
       for (var i = 0; i < data.students.length; i++) {
         var st = data.students[i];
@@ -410,17 +427,34 @@
         rows += '<td>' + (st.course || '—') + '</td>';
         rows += '<td>KSh ' + parseFloat(st.total_billed).toLocaleString() + '</td>';
         rows += '<td style="color:#0F6E56">KSh ' + parseFloat(st.total_paid).toLocaleString() + '</td>';
-        rows += '<td style="color:#A32D2D;font-weight:600">KSh ' + bal.toLocaleString() + '</td>';
+        rows += '<td><span class="editable-balance" id="bal-display-' + st.student_id + '" onclick="editBalance(\'' + st.student_id + '\')">KSh ' + bal.toLocaleString() + ' &#9998;</span></td>';
         rows += '<td><span class="pill ' + pillClass + '">' + pillText + '</span></td>';
         rows += '</tr>';
       }
       document.getElementById('fees-overview-table').innerHTML = '<table><tr><th>ID</th><th>Name</th><th>Course</th><th>Billed</th><th>Paid</th><th>Balance</th><th>Status</th></tr>' + rows + '</table>';
-    } catch (e) {
-      document.getElementById('fees-overview-table').innerHTML = '<p style="color:red;font-size:13px">Could not load overview.</p>';
-    }
+    } catch (e) { document.getElementById('fees-overview-table').innerHTML = '<p style="color:red;font-size:13px">Could not load overview.</p>'; }
   }
 
-  /* --- CASH PAYMENT --- */
+  async function editBalance(studentId) {
+    var cell = document.getElementById('bal-display-' + studentId);
+    var currentText = cell.textContent.replace('KSh ', '').replace(' \u270E', '').replace(/,/g, '').trim();
+    cell.innerHTML = '<input type="number" id="edit-input-' + studentId + '" value="' + currentText + '" /> <button onclick="saveBalance(\'' + studentId + '\')" style="padding:4px 10px;font-size:11px">Save</button>';
+    document.getElementById('edit-input-' + studentId).focus();
+  }
+
+  async function saveBalance(studentId) {
+    var newVal = document.getElementById('edit-input-' + studentId).value;
+    try {
+      var res = await fetch(API + '/admin/fees/student/' + studentId + '?requester_code=' + myCode);
+      var fees = await res.json();
+      if (!fees.length) { alert('No fee record found to edit for this student.'); loadFeesOverview(); return; }
+      var feeId = fees[0].id;
+      var updateRes = await fetch(API + '/admin/fees/' + feeId + '/balance', { method: 'PUT', headers: { 'Content-Type': 'application/json' }, body: JSON.stringify({ new_balance: newVal, requester_code: myCode }) });
+      var data = await updateRes.json();
+      if (updateRes.ok) { loadFeesOverview(); } else { alert(data.error); }
+    } catch (e) { alert('Could not save.'); }
+  }
+
   async function loadStudentFees() {
     var sid = document.getElementById('cash-student-id').value;
     var el = document.getElementById('student-fee-records');
@@ -432,9 +466,7 @@
       var data = await res.json();
       if (!res.ok) { el.innerHTML = '<p style="color:red;font-size:13px">' + data.error + '</p>'; return; }
       if (!data.length) { el.innerHTML = '<p style="color:#888;font-size:13px">No fee records for this student.</p>'; return; }
-
-      var rows = '';
-      var selectOptions = '';
+      var rows = '', selectOptions = '';
       for (var i = 0; i < data.length; i++) {
         var f = data[i];
         rows += '<tr><td>' + f.semester + '</td><td>KSh ' + parseFloat(f.amount).toLocaleString() + '</td><td style="color:#0F6E56">KSh ' + parseFloat(f.paid).toLocaleString() + '</td><td style="color:#A32D2D;font-weight:600">KSh ' + parseFloat(f.balance).toLocaleString() + '</td></tr>';
@@ -443,91 +475,125 @@
       el.innerHTML = '<table><tr><th>Semester</th><th>Total</th><th>Paid</th><th>Balance</th></tr>' + rows + '</table>';
       document.getElementById('cash-fee-id').innerHTML = selectOptions;
       form.classList.remove('hidden');
-    } catch (e) {
-      el.innerHTML = '<p style="color:red;font-size:13px">Connection error.</p>';
-    }
+    } catch (e) { el.innerHTML = '<p style="color:red;font-size:13px">Connection error.</p>'; }
   }
 
   async function recordCashPayment() {
     var feeId = document.getElementById('cash-fee-id').value;
     var amount = document.getElementById('cash-amount').value;
-    var body = { amount_paid: amount, requester_code: myCode };
     try {
-      var res = await fetch(API + '/admin/fees/' + feeId + '/pay', { method: 'PUT', headers: { 'Content-Type': 'application/json' }, body: JSON.stringify(body) });
+      var res = await fetch(API + '/admin/fees/' + feeId + '/pay', { method: 'PUT', headers: { 'Content-Type': 'application/json' }, body: JSON.stringify({ amount_paid: amount, requester_code: myCode }) });
       var data = await res.json();
       showMsg('cash-msg', res.ok ? 'Cash payment of KSh ' + parseFloat(amount).toLocaleString() + ' recorded!' : data.error, res.ok);
       if (res.ok) { loadStudentFees(); loadFeesOverview(); }
     } catch (e) { showMsg('cash-msg', 'Connection error', false); }
   }
 
-  /* --- ADD SINGLE FEE --- */
   async function addFee() {
-    var body = {
-      student_id: document.getElementById('fee-id').value,
-      amount: document.getElementById('fee-amount').value,
-      semester: document.getElementById('fee-semester').value,
-      due_date: document.getElementById('fee-due').value,
-      requester_code: myCode
-    };
-    try {
-      var res = await fetch(API + '/admin/fees', { method: 'POST', headers: { 'Content-Type': 'application/json' }, body: JSON.stringify(body) });
-      var data = await res.json();
-      showMsg('fee-msg', res.ok ? 'Fee record added!' : data.error, res.ok);
-      if (res.ok) loadFeesOverview();
-    } catch (e) { showMsg('fee-msg', 'Connection error', false); }
+    var body = { student_id: document.getElementById('fee-id').value, amount: document.getElementById('fee-amount').value, semester: document.getElementById('fee-semester').value, due_date: document.getElementById('fee-due').value, requester_code: myCode };
+    try { var res = await fetch(API + '/admin/fees', { method: 'POST', headers: { 'Content-Type': 'application/json' }, body: JSON.stringify(body) }); var data = await res.json(); showMsg('fee-msg', res.ok ? 'Fee record added!' : data.error, res.ok); if (res.ok) loadFeesOverview(); } catch (e) { showMsg('fee-msg', 'Connection error', false); }
   }
 
-  /* --- BULK FEE BY COURSE --- */
   async function bulkAddFee() {
-    var body = {
-      course: document.getElementById('bulk-course').value,
-      amount: document.getElementById('bulk-amount').value,
-      semester: document.getElementById('bulk-semester').value,
-      due_date: document.getElementById('bulk-due').value,
-      requester_code: myCode
-    };
-    try {
-      var res = await fetch(API + '/admin/fees/bulk', { method: 'POST', headers: { 'Content-Type': 'application/json' }, body: JSON.stringify(body) });
-      var data = await res.json();
-      showMsg('bulk-msg', res.ok ? data.message : data.error, res.ok);
-      if (res.ok) loadFeesOverview();
-    } catch (e) { showMsg('bulk-msg', 'Connection error', false); }
+    var body = { course: document.getElementById('bulk-course').value, amount: document.getElementById('bulk-amount').value, semester: document.getElementById('bulk-semester').value, due_date: document.getElementById('bulk-due').value, requester_code: myCode };
+    try { var res = await fetch(API + '/admin/fees/bulk', { method: 'POST', headers: { 'Content-Type': 'application/json' }, body: JSON.stringify(body) }); var data = await res.json(); showMsg('bulk-msg', res.ok ? data.message : data.error, res.ok); if (res.ok) loadFeesOverview(); } catch (e) { showMsg('bulk-msg', 'Connection error', false); }
   }
 
-  /* --- TIMETABLE --- */
+  function switchExamType(type, evt) {
+    currentExamType = type;
+    document.querySelectorAll('#exams .subnav button').forEach(function(b) { b.classList.remove('active'); });
+    if (evt) evt.target.classList.add('active');
+  }
+
+  async function addExamFee() {
+    var body = { student_id: document.getElementById('exam-fee-id').value, fee_type: currentExamType, amount: document.getElementById('exam-fee-amount').value, semester: document.getElementById('exam-fee-semester').value, requester_code: myCode };
+    try { var res = await fetch(API + '/admin/exam-fees', { method: 'POST', headers: { 'Content-Type': 'application/json' }, body: JSON.stringify(body) }); var data = await res.json(); showMsg('exam-fee-msg', res.ok ? 'Arrears record added!' : data.error, res.ok); } catch (e) { showMsg('exam-fee-msg', 'Connection error', false); }
+  }
+
+  function examTypeLabel(t) {
+    if (t === 'national_exam') return 'National Exam';
+    if (t === 'internal_exam') return 'Internal Exam';
+    return 'Ream Papers & Files';
+  }
+
+  async function loadExamFeesForStudent() {
+    var sid = document.getElementById('exam-pay-student-id').value;
+    var el = document.getElementById('exam-fee-records');
+    var form = document.getElementById('exam-pay-form');
+    form.classList.add('hidden');
+    el.innerHTML = 'Loading...';
+    try {
+      var res = await fetch(API + '/admin/exam-fees/student/' + sid);
+      var data = await res.json();
+      if (!data.length) { el.innerHTML = '<p style="color:#888;font-size:13px">No exam/materials fee records for this student.</p>'; return; }
+      var rows = '', selectOptions = '';
+      for (var i = 0; i < data.length; i++) {
+        var f = data[i];
+        rows += '<tr><td>' + examTypeLabel(f.fee_type) + '</td><td>' + f.semester + '</td><td>KSh ' + parseFloat(f.amount).toLocaleString() + '</td><td style="color:#0F6E56">KSh ' + parseFloat(f.paid).toLocaleString() + '</td><td style="color:#A32D2D;font-weight:600">KSh ' + parseFloat(f.balance).toLocaleString() + '</td></tr>';
+        selectOptions += '<option value="' + f.id + '">' + examTypeLabel(f.fee_type) + ' — ' + f.semester + ' — Bal: KSh ' + parseFloat(f.balance).toLocaleString() + '</option>';
+      }
+      el.innerHTML = '<table><tr><th>Type</th><th>Semester</th><th>Total</th><th>Paid</th><th>Balance</th></tr>' + rows + '</table>';
+      document.getElementById('exam-pay-fee-id').innerHTML = selectOptions;
+      form.classList.remove('hidden');
+    } catch (e) { el.innerHTML = '<p style="color:red;font-size:13px">Connection error.</p>'; }
+  }
+
+  async function recordExamPayment() {
+    var feeId = document.getElementById('exam-pay-fee-id').value;
+    var amount = document.getElementById('exam-pay-amount').value;
+    try {
+      var res = await fetch(API + '/admin/exam-fees/' + feeId + '/pay', { method: 'PUT', headers: { 'Content-Type': 'application/json' }, body: JSON.stringify({ amount_paid: amount, requester_code: myCode }) });
+      var data = await res.json();
+      showMsg('exam-pay-msg', res.ok ? 'Payment recorded!' : data.error, res.ok);
+      if (res.ok) loadExamFeesForStudent();
+    } catch (e) { showMsg('exam-pay-msg', 'Connection error', false); }
+  }
+
+  async function registerHostel() {
+    var body = { student_id: document.getElementById('hostel-id').value, room_details: document.getElementById('hostel-room').value, amount: document.getElementById('hostel-amount').value, semester: document.getElementById('hostel-semester').value, requester_code: myCode };
+    try { var res = await fetch(API + '/admin/hostel', { method: 'POST', headers: { 'Content-Type': 'application/json' }, body: JSON.stringify(body) }); var data = await res.json(); showMsg('hostel-msg', res.ok ? 'Student registered to hostel!' : data.error, res.ok); if (res.ok) loadHostelList(); } catch (e) { showMsg('hostel-msg', 'Connection error', false); }
+  }
+
+  async function loadHostelList() {
+    var el = document.getElementById('hostel-list');
+    try {
+      var res = await fetch(API + '/admin/hostel/all?requester_code=' + myCode);
+      var data = await res.json();
+      if (!res.ok) { el.innerHTML = '<p style="color:red;font-size:13px">' + data.error + '</p>'; return; }
+      if (!data.length) { el.innerHTML = '<p style="color:#888;font-size:13px">No students registered to hostel yet.</p>'; return; }
+      var rows = '';
+      for (var i = 0; i < data.length; i++) {
+        var h = data[i];
+        rows += '<tr><td>' + h.student_id + '</td><td>' + h.full_name + '</td><td>' + (h.room_details || '—') + '</td><td>KSh ' + parseFloat(h.amount).toLocaleString() + '</td><td style="color:#0F6E56">KSh ' + parseFloat(h.paid).toLocaleString() + '</td><td style="color:#A32D2D;font-weight:600">KSh ' + parseFloat(h.balance).toLocaleString() + '</td></tr>';
+      }
+      el.innerHTML = '<table><tr><th>ID</th><th>Name</th><th>Room</th><th>Total</th><th>Paid</th><th>Balance</th></tr>' + rows + '</table>';
+    } catch (e) { el.innerHTML = '<p style="color:red;font-size:13px">Could not load.</p>'; }
+  }
+
+  async function recordHostelPayment() {
+    var sid = document.getElementById('hostel-pay-id').value;
+    var amount = document.getElementById('hostel-pay-amount').value;
+    try {
+      var allRes = await fetch(API + '/admin/hostel/all?requester_code=' + myCode);
+      var all = await allRes.json();
+      var match = null;
+      for (var i = 0; i < all.length; i++) { if (all[i].student_id === sid) { match = all[i]; break; } }
+      if (!match) { showMsg('hostel-pay-msg', 'Student is not registered to hostel.', false); return; }
+      var res = await fetch(API + '/admin/hostel/' + match.id + '/pay', { method: 'PUT', headers: { 'Content-Type': 'application/json' }, body: JSON.stringify({ amount_paid: amount, requester_code: myCode }) });
+      var data = await res.json();
+      showMsg('hostel-pay-msg', res.ok ? 'Payment recorded!' : data.error, res.ok);
+      if (res.ok) loadHostelList();
+    } catch (e) { showMsg('hostel-pay-msg', 'Connection error', false); }
+  }
+
   async function addTimetable() {
-    var body = {
-      unit_name: document.getElementById('tt-unit').value,
-      day: document.getElementById('tt-day').value,
-      start_time: document.getElementById('tt-start').value,
-      end_time: document.getElementById('tt-end').value,
-      room: document.getElementById('tt-room').value,
-      semester: document.getElementById('tt-semester').value,
-      requester_code: myCode
-    };
-    try {
-      var res = await fetch(API + '/admin/timetable', { method: 'POST', headers: { 'Content-Type': 'application/json' }, body: JSON.stringify(body) });
-      var data = await res.json();
-      showMsg('tt-msg', res.ok ? 'Timetable entry added!' : data.error, res.ok);
-    } catch (e) { showMsg('tt-msg', 'Connection error', false); }
+    var body = { unit_name: document.getElementById('tt-unit').value, day: document.getElementById('tt-day').value, start_time: document.getElementById('tt-start').value, end_time: document.getElementById('tt-end').value, room: document.getElementById('tt-room').value, semester: document.getElementById('tt-semester').value, requester_code: myCode };
+    try { var res = await fetch(API + '/admin/timetable', { method: 'POST', headers: { 'Content-Type': 'application/json' }, body: JSON.stringify(body) }); var data = await res.json(); showMsg('tt-msg', res.ok ? 'Timetable entry added!' : data.error, res.ok); } catch (e) { showMsg('tt-msg', 'Connection error', false); }
   }
 
-  /* --- STUDENTS --- */
   async function registerStudent() {
-    var body = {
-      student_id: document.getElementById('reg-id').value,
-      full_name: document.getElementById('reg-name').value,
-      email: document.getElementById('reg-email').value,
-      phone: document.getElementById('reg-phone').value,
-      course: document.getElementById('reg-course').value,
-      password: document.getElementById('reg-password').value
-    };
-    try {
-      var res = await fetch(API + '/auth/register', { method: 'POST', headers: { 'Content-Type': 'application/json' }, body: JSON.stringify(body) });
-      var data = await res.json();
-      showMsg('reg-msg', res.ok ? 'Student registered!' : data.error, res.ok);
-      if (res.ok) loadStudents();
-    } catch (e) { showMsg('reg-msg', 'Connection error', false); }
+    var body = { student_id: document.getElementById('reg-id').value, full_name: document.getElementById('reg-name').value, email: document.getElementById('reg-email').value, phone: document.getElementById('reg-phone').value, course: document.getElementById('reg-course').value, password: document.getElementById('reg-password').value };
+    try { var res = await fetch(API + '/auth/register', { method: 'POST', headers: { 'Content-Type': 'application/json' }, body: JSON.stringify(body) }); var data = await res.json(); showMsg('reg-msg', res.ok ? 'Student registered!' : data.error, res.ok); if (res.ok) loadStudents(); } catch (e) { showMsg('reg-msg', 'Connection error', false); }
   }
 
   async function loadStudents() {
@@ -546,21 +612,9 @@
     } catch (e) { el.innerHTML = '<p style="color:red;font-size:13px">Could not load.</p>'; }
   }
 
-  /* --- EMPLOYEES --- */
   async function createEmployee() {
-    var body = {
-      employee_code: document.getElementById('emp-new-code').value,
-      full_name: document.getElementById('emp-new-name').value,
-      id_number: document.getElementById('emp-new-idnum').value,
-      role: document.getElementById('emp-new-role').value,
-      requester_code: myCode
-    };
-    try {
-      var res = await fetch(API + '/employees/create', { method: 'POST', headers: { 'Content-Type': 'application/json' }, body: JSON.stringify(body) });
-      var data = await res.json();
-      showMsg('emp-msg', res.ok ? 'Employee added!' : data.error, res.ok);
-      if (res.ok) loadEmployees();
-    } catch (e) { showMsg('emp-msg', 'Connection error', false); }
+    var body = { employee_code: document.getElementById('emp-new-code').value, full_name: document.getElementById('emp-new-name').value, id_number: document.getElementById('emp-new-idnum').value, role: document.getElementById('emp-new-role').value, requester_code: myCode };
+    try { var res = await fetch(API + '/employees/create', { method: 'POST', headers: { 'Content-Type': 'application/json' }, body: JSON.stringify(body) }); var data = await res.json(); showMsg('emp-msg', res.ok ? 'Employee added!' : data.error, res.ok); if (res.ok) loadEmployees(); } catch (e) { showMsg('emp-msg', 'Connection error', false); }
   }
 
   async function loadEmployees() {
