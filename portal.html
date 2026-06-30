@@ -55,15 +55,13 @@
     .print-btn { background: #1A1A2E; font-size: 13px; padding: 8px 16px; border-radius: 6px; margin-top: 12px; width: auto; }
     .print-btn:hover { background: #0f0f1a; }
     .receipt-btn { background: #0F6E56; font-size: 12px; padding: 5px 12px; border-radius: 5px; width: auto; }
+    .nil-text { color: #888; font-style: italic; }
 
-    /* PRINT STYLES */
     @media print {
       body * { visibility: hidden; }
       #print-area, #print-area * { visibility: visible; }
       #print-area { position: fixed; top: 0; left: 0; width: 100%; padding: 40px; background: white; }
     }
-
-    /* PRINT DOCUMENT STYLES */
     #print-area { display: none; }
     .print-doc { font-family: Arial, sans-serif; font-size: 13px; color: #000; max-width: 700px; margin: 0 auto; }
     .print-header { text-align: center; margin-bottom: 24px; border-bottom: 2px solid #0F6E56; padding-bottom: 16px; }
@@ -84,10 +82,8 @@
 </head>
 <body>
 
-<!-- PRINT AREA (hidden, shown only when printing) -->
 <div id="print-area"></div>
 
-<!-- LOGIN -->
 <div id="login-page">
   <div class="login-box">
     <h2>Student Portal</h2>
@@ -99,7 +95,6 @@
   </div>
 </div>
 
-<!-- PORTAL -->
 <div id="portal-page">
   <div class="header">
     <h1>Gloryca International College — Student Portal</h1>
@@ -120,11 +115,10 @@
 
   <div class="content">
 
-    <!-- DASHBOARD -->
     <div class="section active" id="dashboard">
       <div class="stat-grid">
         <div class="stat"><div class="label">Student ID</div><div class="value" style="font-size:16px" id="dash-id">—</div></div>
-        <div class="stat"><div class="label">Fee Balance</div><div class="value" style="color:#A32D2D;font-size:18px" id="dash-balance">—</div></div>
+        <div class="stat"><div class="label">School Fee Balance</div><div class="value" style="color:#A32D2D;font-size:18px" id="dash-balance">—</div></div>
         <div class="stat"><div class="label">Avg Attendance</div><div class="value" id="dash-attendance">—</div></div>
         <div class="stat"><div class="label">Results</div><div class="value" id="dash-results">—</div></div>
       </div>
@@ -134,7 +128,6 @@
       </div>
     </div>
 
-    <!-- RESULTS -->
     <div class="section" id="results">
       <div class="card">
         <h3>Exam Results</h3>
@@ -143,7 +136,6 @@
       </div>
     </div>
 
-    <!-- TIMETABLE -->
     <div class="section" id="timetable">
       <div class="card">
         <h3>Class Timetable</h3>
@@ -151,13 +143,33 @@
       </div>
     </div>
 
-    <!-- FEES -->
     <div class="section" id="fees">
       <div class="card">
-        <h3>Fee Balance</h3>
+        <h3>School Fees</h3>
         <div id="fees-body"><div class="loading">Loading...</div></div>
         <button class="print-btn" onclick="printFeeStatement()">Print / Download Fee Statement</button>
       </div>
+
+      <div class="card">
+        <h3>National Exam Fees</h3>
+        <div id="national-exam-body"><div class="loading">Loading...</div></div>
+      </div>
+
+      <div class="card">
+        <h3>Internal Exam Fees</h3>
+        <div id="internal-exam-body"><div class="loading">Loading...</div></div>
+      </div>
+
+      <div class="card">
+        <h3>Ream Papers &amp; Files</h3>
+        <div id="ream-papers-body"><div class="loading">Loading...</div></div>
+      </div>
+
+      <div class="card">
+        <h3>Hostel Fees</h3>
+        <div id="hostel-body"><div class="loading">Loading...</div></div>
+      </div>
+
       <div class="card">
         <h3>Pay via M-Pesa</h3>
         <div class="pay-form">
@@ -169,7 +181,6 @@
       </div>
     </div>
 
-    <!-- ATTENDANCE -->
     <div class="section" id="attendance">
       <div class="card">
         <h3>Attendance by Unit</h3>
@@ -177,7 +188,6 @@
       </div>
     </div>
 
-    <!-- PAYMENTS -->
     <div class="section" id="payments">
       <div class="card">
         <h3>Payment History</h3>
@@ -202,11 +212,7 @@
     var err = document.getElementById('login-error');
     err.classList.add('hidden');
     try {
-      var res = await fetch(API + '/auth/login', {
-        method: 'POST',
-        headers: { 'Content-Type': 'application/json' },
-        body: JSON.stringify({ student_id: id, password: pass })
-      });
+      var res = await fetch(API + '/auth/login', { method: 'POST', headers: { 'Content-Type': 'application/json' }, body: JSON.stringify({ student_id: id, password: pass }) });
       var data = await res.json();
       if (!res.ok) { err.textContent = data.error; err.classList.remove('hidden'); return; }
       token = data.token;
@@ -217,10 +223,7 @@
       document.getElementById('login-page').style.display = 'none';
       document.getElementById('portal-page').style.display = 'block';
       loadDashboard();
-    } catch (e) {
-      err.textContent = 'Cannot connect to server';
-      err.classList.remove('hidden');
-    }
+    } catch (e) { err.textContent = 'Cannot connect to server'; err.classList.remove('hidden'); }
   }
 
   async function loadDashboard() {
@@ -277,13 +280,47 @@
     var data = await res.json();
     cachedFees = data;
     var el = document.getElementById('fees-body');
-    if (!data.length) { el.innerHTML = '<p style="color:#888;font-size:13px">No fee records yet.</p>'; return; }
+    if (!data.length) { el.innerHTML = '<p style="color:#888;font-size:13px">No school fee records yet.</p>'; return; }
     var rows = '';
     for (var i = 0; i < data.length; i++) {
       var f = data[i];
       rows += '<tr><td>' + f.semester + '</td><td>KSh ' + parseFloat(f.amount).toLocaleString() + '</td><td>KSh ' + parseFloat(f.paid).toLocaleString() + '</td><td style="color:#A32D2D;font-weight:600">KSh ' + parseFloat(f.balance).toLocaleString() + '</td><td>' + new Date(f.due_date).toLocaleDateString() + '</td></tr>';
     }
     el.innerHTML = '<table><tr><th>Semester</th><th>Total</th><th>Paid</th><th>Balance</th><th>Due Date</th></tr>' + rows + '</table>';
+  }
+
+  function examTypeLabel(t) {
+    if (t === 'national_exam') return 'National Exam';
+    if (t === 'internal_exam') return 'Internal Exam';
+    return 'Ream Papers & Files';
+  }
+
+  async function loadExamFeesSection(type, elId, emptyLabel) {
+    var el = document.getElementById(elId);
+    try {
+      var res = await fetch(API + '/admin/exam-fees/student/' + studentId);
+      var data = await res.json();
+      var filtered = [];
+      for (var i = 0; i < data.length; i++) { if (data[i].fee_type === type) filtered.push(data[i]); }
+      if (!filtered.length) { el.innerHTML = '<p class="nil-text">Nil — no ' + emptyLabel + ' fee recorded.</p>'; return; }
+      var rows = '';
+      for (var j = 0; j < filtered.length; j++) {
+        var f = filtered[j];
+        rows += '<tr><td>' + f.semester + '</td><td>KSh ' + parseFloat(f.amount).toLocaleString() + '</td><td>KSh ' + parseFloat(f.paid).toLocaleString() + '</td><td style="color:#A32D2D;font-weight:600">KSh ' + parseFloat(f.balance).toLocaleString() + '</td></tr>';
+      }
+      el.innerHTML = '<table><tr><th>Semester</th><th>Total</th><th>Paid</th><th>Balance</th></tr>' + rows + '</table>';
+    } catch (e) { el.innerHTML = '<p class="nil-text">Nil</p>'; }
+  }
+
+  async function loadHostelSection() {
+    var el = document.getElementById('hostel-body');
+    try {
+      var res = await fetch(API + '/admin/hostel/student/' + studentId);
+      var data = await res.json();
+      if (!data) { el.innerHTML = '<p class="nil-text">Nil — not registered for hostel.</p>'; return; }
+      el.innerHTML = '<table><tr><th>Room</th><th>Total</th><th>Paid</th><th>Balance</th></tr>' +
+        '<tr><td>' + (data.room_details || '—') + '</td><td>KSh ' + parseFloat(data.amount).toLocaleString() + '</td><td>KSh ' + parseFloat(data.paid).toLocaleString() + '</td><td style="color:#A32D2D;font-weight:600">KSh ' + parseFloat(data.balance).toLocaleString() + '</td></tr></table>';
+    } catch (e) { el.innerHTML = '<p class="nil-text">Nil</p>'; }
   }
 
   async function loadAttendance() {
@@ -311,15 +348,8 @@
       var p = data[i];
       var date = new Date(p.created_at).toLocaleDateString();
       var receipt = p.mpesa_receipt || '—';
-      var method = receipt.startsWith('CASH') ? 'Cash' : 'M-Pesa';
-      rows += '<tr>';
-      rows += '<td>' + date + '</td>';
-      rows += '<td>KSh ' + parseFloat(p.amount).toLocaleString() + '</td>';
-      rows += '<td>' + method + '</td>';
-      rows += '<td>' + receipt + '</td>';
-      rows += '<td><span class="badge pass">' + p.status + '</span></td>';
-      rows += '<td><button class="receipt-btn" onclick="printReceipt(' + i + ')">Receipt</button></td>';
-      rows += '</tr>';
+      var method = receipt.indexOf('CASH') === 0 ? 'Cash' : 'M-Pesa';
+      rows += '<tr><td>' + date + '</td><td>KSh ' + parseFloat(p.amount).toLocaleString() + '</td><td>' + method + '</td><td>' + receipt + '</td><td><span class="badge pass">' + p.status + '</span></td><td><button class="receipt-btn" onclick="printReceipt(' + i + ')">Receipt</button></td></tr>';
     }
     el.innerHTML = '<table><tr><th>Date</th><th>Amount</th><th>Method</th><th>Receipt No.</th><th>Status</th><th></th></tr>' + rows + '</table>';
     window._payments = data;
@@ -332,23 +362,11 @@
     msg.textContent = 'Sending payment request...';
     msg.className = 'loading';
     try {
-      var res = await fetch(API + '/mpesa/pay', {
-        method: 'POST',
-        headers: { 'Content-Type': 'application/json' },
-        body: JSON.stringify({ student_id: studentId, phone: phone, amount: parseInt(amount) })
-      });
+      var res = await fetch(API + '/mpesa/pay', { method: 'POST', headers: { 'Content-Type': 'application/json' }, body: JSON.stringify({ student_id: studentId, phone: phone, amount: parseInt(amount) }) });
       var data = await res.json();
-      if (res.ok) {
-        msg.textContent = 'Payment prompt sent to your phone! Enter your M-Pesa PIN to complete.';
-        msg.className = 'success';
-      } else {
-        msg.textContent = data.error;
-        msg.className = 'error';
-      }
-    } catch (e) {
-      msg.textContent = 'Payment failed. Try again.';
-      msg.className = 'error';
-    }
+      if (res.ok) { msg.textContent = 'Payment prompt sent to your phone! Enter your M-Pesa PIN to complete.'; msg.className = 'success'; }
+      else { msg.textContent = data.error; msg.className = 'error'; }
+    } catch (e) { msg.textContent = 'Payment failed. Try again.'; msg.className = 'error'; }
   }
 
   function printTranscript() {
@@ -359,17 +377,13 @@
       var passed = parseFloat(r.total_score) >= 50;
       rows += '<tr><td>' + r.unit_name + '</td><td style="text-align:center">' + r.cat_score + '</td><td style="text-align:center">' + r.exam_score + '</td><td style="text-align:center">' + r.total_score + '</td><td style="text-align:center">' + r.grade + '</td><td style="text-align:center">' + (passed ? 'PASS' : 'FAIL') + '</td></tr>';
     }
-
     document.getElementById('print-area').innerHTML =
-      '<div class="print-doc">' +
-      '<div class="print-header"><h2>Gloryca International College</h2><p>P.O Box 00100, Nairobi, Kenya &nbsp;|&nbsp; Email: info@glorycacollege.ac.ke</p></div>' +
+      '<div class="print-doc"><div class="print-header"><h2>Gloryca International College</h2><p>P.O Box 00100, Nairobi, Kenya &nbsp;|&nbsp; Email: info@glorycacollege.ac.ke</p></div>' +
       '<div class="print-title">Academic Transcript</div>' +
       '<div class="print-info"><div><strong>Student Name:</strong> ' + studentFullName + '<br><strong>Student ID:</strong> ' + studentId + '</div><div style="text-align:right"><strong>Date Issued:</strong> ' + now + '<br><strong>Document Type:</strong> Official Transcript</div></div>' +
       '<table class="print-table"><tr><th>Unit</th><th>CAT</th><th>Exam</th><th>Total</th><th>Grade</th><th>Status</th></tr>' + rows + '</table>' +
       '<div class="print-footer"><div></div><div class="print-sig"><div class="sig-line"></div><p><strong>Vivian Gutto</strong></p><p>Director, Gloryca International College</p></div></div>' +
-      '<div class="print-watermark">This is an official document issued by Gloryca International College. Issued on ' + now + '.</div>' +
-      '</div>';
-
+      '<div class="print-watermark">This is an official document issued by Gloryca International College. Issued on ' + now + '.</div></div>';
     document.getElementById('print-area').style.display = 'block';
     window.print();
     document.getElementById('print-area').style.display = 'none';
@@ -378,9 +392,7 @@
   function printFeeStatement() {
     var now = new Date().toLocaleDateString();
     var rows = '';
-    var totalBilled = 0;
-    var totalPaid = 0;
-    var totalBalance = 0;
+    var totalBilled = 0, totalPaid = 0, totalBalance = 0;
     for (var i = 0; i < cachedFees.length; i++) {
       var f = cachedFees[i];
       totalBilled += parseFloat(f.amount);
@@ -389,19 +401,14 @@
       rows += '<tr><td>' + f.semester + '</td><td>KSh ' + parseFloat(f.amount).toLocaleString() + '</td><td>KSh ' + parseFloat(f.paid).toLocaleString() + '</td><td><strong>KSh ' + parseFloat(f.balance).toLocaleString() + '</strong></td><td>' + new Date(f.due_date).toLocaleDateString() + '</td></tr>';
     }
     rows += '<tr style="background:#f9f9f9"><td><strong>TOTAL</strong></td><td><strong>KSh ' + totalBilled.toLocaleString() + '</strong></td><td><strong>KSh ' + totalPaid.toLocaleString() + '</strong></td><td><strong style="color:#A32D2D">KSh ' + totalBalance.toLocaleString() + '</strong></td><td></td></tr>';
-
     var clearanceStatus = totalBalance <= 0 ? '<span style="color:green;font-weight:bold">FEE CLEARED</span>' : '<span style="color:#A32D2D;font-weight:bold">OUTSTANDING BALANCE: KSh ' + totalBalance.toLocaleString() + '</span>';
-
     document.getElementById('print-area').innerHTML =
-      '<div class="print-doc">' +
-      '<div class="print-header"><h2>Gloryca International College</h2><p>P.O Box 00100, Nairobi, Kenya &nbsp;|&nbsp; Email: info@glorycacollege.ac.ke</p></div>' +
+      '<div class="print-doc"><div class="print-header"><h2>Gloryca International College</h2><p>P.O Box 00100, Nairobi, Kenya &nbsp;|&nbsp; Email: info@glorycacollege.ac.ke</p></div>' +
       '<div class="print-title">Fee Statement</div>' +
       '<div class="print-info"><div><strong>Student Name:</strong> ' + studentFullName + '<br><strong>Student ID:</strong> ' + studentId + '</div><div style="text-align:right"><strong>Date Issued:</strong> ' + now + '<br><strong>Status:</strong> ' + clearanceStatus + '</div></div>' +
       '<table class="print-table"><tr><th>Semester</th><th>Amount Billed</th><th>Amount Paid</th><th>Balance</th><th>Due Date</th></tr>' + rows + '</table>' +
       '<div class="print-footer"><div></div><div class="print-sig"><div class="sig-line"></div><p><strong>Vivian Gutto</strong></p><p>Director, Gloryca International College</p></div></div>' +
-      '<div class="print-watermark">This is an official fee statement issued by Gloryca International College. Issued on ' + now + '.</div>' +
-      '</div>';
-
+      '<div class="print-watermark">This is an official fee statement issued by Gloryca International College. Issued on ' + now + '.</div></div>';
     document.getElementById('print-area').style.display = 'block';
     window.print();
     document.getElementById('print-area').style.display = 'none';
@@ -412,28 +419,21 @@
     var now = new Date().toLocaleDateString();
     var payDate = new Date(p.created_at).toLocaleDateString();
     var receipt = p.mpesa_receipt || 'N/A';
-    var method = receipt.startsWith('CASH') ? 'Cash Payment' : 'M-Pesa';
-
+    var method = receipt.indexOf('CASH') === 0 ? 'Cash Payment' : 'M-Pesa';
     document.getElementById('print-area').innerHTML =
-      '<div class="print-doc">' +
-      '<div class="print-header"><h2>Gloryca International College</h2><p>P.O Box 00100, Nairobi, Kenya &nbsp;|&nbsp; Email: info@glorycacollege.ac.ke</p></div>' +
+      '<div class="print-doc"><div class="print-header"><h2>Gloryca International College</h2><p>P.O Box 00100, Nairobi, Kenya &nbsp;|&nbsp; Email: info@glorycacollege.ac.ke</p></div>' +
       '<div class="print-title">Official Payment Receipt</div>' +
-      '<div class="receipt-box">' +
-      '<table style="width:100%;font-size:13px;border-collapse:collapse">' +
+      '<div class="receipt-box"><table style="width:100%;font-size:13px;border-collapse:collapse">' +
       '<tr><td style="padding:6px 0;color:#555">Receipt Number</td><td style="padding:6px 0;font-weight:600">' + receipt + '</td></tr>' +
       '<tr><td style="padding:6px 0;color:#555">Student Name</td><td style="padding:6px 0">' + studentFullName + '</td></tr>' +
       '<tr><td style="padding:6px 0;color:#555">Student ID</td><td style="padding:6px 0">' + studentId + '</td></tr>' +
       '<tr><td style="padding:6px 0;color:#555">Payment Date</td><td style="padding:6px 0">' + payDate + '</td></tr>' +
       '<tr><td style="padding:6px 0;color:#555">Payment Method</td><td style="padding:6px 0">' + method + '</td></tr>' +
       '<tr><td style="padding:6px 0;color:#555">Amount Paid</td><td style="padding:6px 0;font-size:18px;font-weight:700;color:#0F6E56">KSh ' + parseFloat(p.amount).toLocaleString() + '</td></tr>' +
-      '<tr><td style="padding:6px 0;color:#555">Status</td><td style="padding:6px 0;color:green;font-weight:600">PAID</td></tr>' +
-      '</table>' +
-      '</div>' +
+      '<tr><td style="padding:6px 0;color:#555">Status</td><td style="padding:6px 0;color:green;font-weight:600">PAID</td></tr></table></div>' +
       '<p style="font-size:12px;color:#555;margin-top:16px">This receipt confirms payment of <strong>KSh ' + parseFloat(p.amount).toLocaleString() + '</strong> towards fees at Gloryca International College.</p>' +
       '<div class="print-footer"><div></div><div class="print-sig"><div class="sig-line"></div><p><strong>Vivian Gutto</strong></p><p>Director, Gloryca International College</p></div></div>' +
-      '<div class="print-watermark">This is an official receipt issued by Gloryca International College. Issued on ' + now + '.</div>' +
-      '</div>';
-
+      '<div class="print-watermark">This is an official receipt issued by Gloryca International College. Issued on ' + now + '.</div></div>';
     document.getElementById('print-area').style.display = 'block';
     window.print();
     document.getElementById('print-area').style.display = 'none';
@@ -446,7 +446,13 @@
     event.target.classList.add('active');
     if (tab === 'results') loadResults();
     if (tab === 'timetable') loadTimetable();
-    if (tab === 'fees') loadFees();
+    if (tab === 'fees') {
+      loadFees();
+      loadExamFeesSection('national_exam', 'national-exam-body', 'National Exam');
+      loadExamFeesSection('internal_exam', 'internal-exam-body', 'Internal Exam');
+      loadExamFeesSection('ream_papers_files', 'ream-papers-body', 'Ream Papers & Files');
+      loadHostelSection();
+    }
     if (tab === 'attendance') loadAttendance();
     if (tab === 'payments') loadPayments();
   }
