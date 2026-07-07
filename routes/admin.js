@@ -38,9 +38,8 @@ router.put('/results/:id', async (req, res) => {
     if (!role) return res.status(403).json({ error: 'Not authorized' })
     const existing = await pool.query('SELECT created_by FROM results WHERE id = $1', [id])
     if (!existing.rows.length) return res.status(404).json({ error: 'Result not found' })
-    if (role !== 'chief_admin' && existing.rows[0].created_by !== requester_code) {
+    if (role !== 'chief_admin' && existing.rows[0].created_by !== requester_code)
       return res.status(403).json({ error: 'You can only edit results you created' })
-    }
     const updated = await pool.query(
       `UPDATE results SET cat_score=$1, exam_score=$2, total_score=$3, grade=$4 WHERE id=$5 RETURNING *`,
       [cat_score, exam_score, total_score, grade, id]
@@ -57,15 +56,13 @@ router.delete('/results/:id', async (req, res) => {
     if (!role) return res.status(403).json({ error: 'Not authorized' })
     const existing = await pool.query('SELECT created_by FROM results WHERE id = $1', [id])
     if (!existing.rows.length) return res.status(404).json({ error: 'Result not found' })
-    if (role !== 'chief_admin' && existing.rows[0].created_by !== requester_code) {
+    if (role !== 'chief_admin' && existing.rows[0].created_by !== requester_code)
       return res.status(403).json({ error: 'You can only delete results you created' })
-    }
     await pool.query('DELETE FROM results WHERE id = $1', [id])
     res.json({ message: 'Result deleted!' })
   } catch (err) { res.status(500).json({ error: err.message }) }
 })
 
-// Get results for a student (for admin view with delete buttons)
 router.get('/results/student/:student_id', async (req, res) => {
   const { requester_code } = req.query
   try {
@@ -102,9 +99,8 @@ router.delete('/attendance/:id', async (req, res) => {
     if (!role) return res.status(403).json({ error: 'Not authorized' })
     const existing = await pool.query('SELECT created_by FROM attendance WHERE id = $1', [id])
     if (!existing.rows.length) return res.status(404).json({ error: 'Attendance record not found' })
-    if (role !== 'chief_admin' && existing.rows[0].created_by !== requester_code) {
+    if (role !== 'chief_admin' && existing.rows[0].created_by !== requester_code)
       return res.status(403).json({ error: 'You can only delete attendance you created' })
-    }
     await pool.query('DELETE FROM attendance WHERE id = $1', [id])
     res.json({ message: 'Attendance deleted!' })
   } catch (err) { res.status(500).json({ error: err.message }) }
@@ -143,9 +139,10 @@ router.post('/fees/bulk', async (req, res) => {
   } catch (err) { res.status(500).json({ error: err.message }) }
 })
 
+// Record a payment — supports cash, cheque, bank transfer
 router.put('/fees/:id/pay', async (req, res) => {
   const { id } = req.params
-  const { amount_paid, requester_code } = req.body
+  const { amount_paid, payment_method, payment_details, requester_code } = req.body
   try {
     const role = await getRole(requester_code)
     if (role !== 'chief_admin') return res.status(403).json({ error: 'Only Chief Admin can record payments' })
@@ -155,9 +152,20 @@ router.put('/fees/:id/pay', async (req, res) => {
     const newPaid = parseFloat(fee.paid) + parseFloat(amount_paid)
     const newBalance = parseFloat(fee.amount) - newPaid
     const updated = await pool.query(`UPDATE fees SET paid=$1, balance=$2 WHERE id=$3 RETURNING *`, [newPaid, newBalance, id])
+
+    // Build receipt reference
+    const method = payment_method || 'cash'
+    var receiptRef = 'CASH-' + Date.now()
+    if (method === 'cheque' && payment_details && payment_details.cheque_number) {
+      receiptRef = 'CHQ-' + payment_details.cheque_number
+    } else if (method === 'bank_transfer' && payment_details && payment_details.reference_number) {
+      receiptRef = 'BNK-' + payment_details.reference_number
+    }
+
     await pool.query(
-      `INSERT INTO payments (student_id, amount, mpesa_receipt, phone, status) VALUES ($1, $2, $3, $4, 'completed')`,
-      [fee.student_id, amount_paid, 'CASH-' + Date.now(), 'cash']
+      `INSERT INTO payments (student_id, amount, mpesa_receipt, phone, status, payment_method, payment_details)
+       VALUES ($1, $2, $3, $4, 'completed', $5, $6)`,
+      [fee.student_id, amount_paid, receiptRef, method, method, JSON.stringify(payment_details || {})]
     )
     res.json({ message: 'Payment recorded!', fee: updated.rows[0] })
   } catch (err) { res.status(500).json({ error: err.message }) }
