@@ -183,37 +183,37 @@ router.delete('/fees/:id', async (req, res) => {
   } catch (err) { res.status(500).json({ error: err.message }) }
 })
 
-/* ============ BULK ATTENDANCE SUBMISSION ============ */
-// Teacher submits attendance: sends list of absent student IDs
-// System marks everyone else in the course as present (+1 class attended)
+/* ============ BULK ATTENDANCE — with explicit Present/Absent per student ============ */
 router.post('/attendance/bulk', async (req, res) => {
-  const { course, unit_name, semester, class_date, absent_ids, requester_code } = req.body
+  const { course, unit_name, semester, class_date, attendance_records, requester_code } = req.body
+  // attendance_records = [{ student_id: 'WC-001', status: 'present' }, ...]
   try {
     const role = await getRole(requester_code)
     if (!role) return res.status(403).json({ error: 'Not authorized' })
 
-    // Get all students in this course
-    const studentsRes = await pool.query(
-      'SELECT student_id FROM students WHERE course = $1', [course]
-    )
-    const allStudents = studentsRes.rows.map(r => r.student_id)
-    const absentSet = new Set(absent_ids || [])
-
     var present = 0
     var absent = 0
 
-    for (var i = 0; i < allStudents.length; i++) {
-      var sid = allStudents[i]
-      var wasPresent = !absentSet.has(sid)
+    for (var i = 0; i < attendance_records.length; i++) {
+      var sid = attendance_records[i].student_id
+      var status = attendance_records[i].status
+      var wasPresent = status === 'present'
 
-      // Check if attendance record exists
+      // Save individual session record
+      await pool.query(
+        `INSERT INTO attendance_sessions (student_id, unit_name, course, semester, class_date, status, recorded_by)
+         VALUES ($1, $2, $3, $4, $5, $6, $7)
+         ON CONFLICT DO NOTHING`,
+        [sid, unit_name, course, semester, class_date, status, requester_code]
+      )
+
+      // Update running totals
       const existing = await pool.query(
         'SELECT * FROM attendance WHERE student_id = $1 AND unit_name = $2 AND semester = $3',
         [sid, unit_name, semester]
       )
 
       if (existing.rows.length === 0) {
-        // Create new record
         const attended = wasPresent ? 1 : 0
         const pct = wasPresent ? 100 : 0
         await pool.query(
@@ -222,7 +222,6 @@ router.post('/attendance/bulk', async (req, res) => {
           [sid, unit_name, attended, pct, semester, requester_code]
         )
       } else {
-        // Update existing record
         const rec = existing.rows[0]
         const newTotal = parseInt(rec.total_classes) + 1
         const newAttended = parseInt(rec.classes_attended) + (wasPresent ? 1 : 0)
@@ -239,8 +238,62 @@ router.post('/attendance/bulk', async (req, res) => {
 
     res.json({
       message: 'Attendance submitted! ' + present + ' present, ' + absent + ' absent.',
-      present, absent, total: allStudents.length, date: class_date
+      present, absent, total: attendance_records.length, date: class_date
     })
+  } catch (err) { res.status(500).json({ error: err.message }) }
+})
+
+/* ============ GET ATTENDANCE SESSIONS — by course, unit, date range ============ */
+router.get('/attendance/sessions', async (req, res) => {
+  const { course, unit_name, from_date, to_date, requester_code } = req.query
+  try {
+    const role = await getRole(requester_code)
+    if (!role) return res.status(403).json({ error: 'Not authorized' })
+
+    var query = `
+      SELECT s.student_id, st.full_name, s.unit_name, s.course, s.class_date, s.status, s.semester
+      FROM attendance_sessions s
+      JOIN students st ON s.student_id = st.student_id
+      WHERE s.course = $1
+    `
+    var params = [course]
+    var paramCount = 2
+
+    if (unit_name) { query += ` AND s.unit_name = $${paramCount}`; params.push(unit_name); paramCount++; }
+    if (from_date) { query += ` AND s.class_date >= $${paramCount}`; params.push(from_date); paramCount++; }
+    if (to_date) { query += ` AND s.class_date <= $${paramCount}`; params.push(to_date); paramCount++; }
+
+    query += ' ORDER BY s.class_date DESC, st.full_name'
+
+    const result = await pool.query(query, params)
+    res.json(result.rows)
+  } catch (err) { res.status(500).json({ error: err.message }) }
+})
+
+/* ============ GET ATTENDANCE SUMMARY — by course ============ */
+router.get('/attendance/summary', async (req, res) => {
+  const { course, unit_name, semester, requester_code } = req.query
+  try {
+    const role = await getRole(requester_code)
+    if (!role) return res.status(403).json({ error: 'Not authorized' })
+
+    var query = `
+      SELECT a.student_id, st.full_name, a.unit_name, a.semester,
+             a.classes_attended, a.total_classes, a.percentage
+      FROM attendance a
+      JOIN students st ON a.student_id = st.student_id
+      WHERE st.course = $1
+    `
+    var params = [course]
+    var paramCount = 2
+
+    if (unit_name) { query += ` AND a.unit_name = $${paramCount}`; params.push(unit_name); paramCount++; }
+    if (semester) { query += ` AND a.semester = $${paramCount}`; params.push(semester); paramCount++; }
+
+    query += ' ORDER BY st.full_name, a.unit_name'
+
+    const result = await pool.query(query, params)
+    res.json(result.rows)
   } catch (err) { res.status(500).json({ error: err.message }) }
 })
 

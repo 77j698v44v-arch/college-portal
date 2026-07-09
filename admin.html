@@ -41,6 +41,7 @@
     th { text-align: left; padding: 8px 6px; border-bottom: 2px solid #eee; color: #666; font-size: 12px; }
     td { padding: 9px 6px; border-bottom: 1px solid #f0f0f0; vertical-align: middle; }
     .two-col { display: grid; grid-template-columns: 1fr 1fr; gap: 12px; }
+    .three-col { display: grid; grid-template-columns: 1fr 1fr 1fr; gap: 12px; }
     .pill { display: inline-block; font-size: 11px; padding: 2px 8px; border-radius: 20px; font-weight: 600; }
     .pill.chief { background: #FCEBEB; color: #A32D2D; }
     .pill.teacher { background: #E6F1FB; color: #0C447C; }
@@ -55,12 +56,25 @@
     .warn-box { background: #FFF8E1; border-radius: 8px; padding: 12px 16px; font-size: 13px; color: #7B5800; margin-bottom: 16px; border-left: 3px solid #F9A825; }
     .editable-balance { cursor: pointer; border-radius: 4px; padding: 2px 6px; }
     .editable-balance:hover { background: #fff3cd; }
-    .subnav { display: flex; gap: 6px; margin-bottom: 16px; flex-wrap: wrap; }
-    .subnav button { background: #eee; color: #555; font-size: 12px; padding: 6px 14px; border-radius: 20px; }
+    .subnav { display: flex; gap: 6px; margin-bottom: 20px; flex-wrap: wrap; border-bottom: 2px solid #eee; padding-bottom: 12px; }
+    .subnav button { background: #eee; color: #555; font-size: 13px; padding: 8px 18px; border-radius: 6px; }
     .subnav button.active { background: #1A1A2E; color: white; }
+    .exam-subnav button { font-size: 12px; padding: 6px 14px; border-radius: 20px; }
     .small-text { font-size: 12px; color: #888; }
     .payment-extra { background: #f9f9f9; border-radius: 8px; padding: 14px; margin-top: 10px; border: 1px solid #eee; }
     .payment-extra label { margin-top: 8px; }
+    .att-row { display: flex; align-items: center; justify-content: space-between; padding: 10px 8px; border-bottom: 1px solid #f0f0f0; }
+    .att-row:last-child { border-bottom: none; }
+    .att-name { font-size: 13px; flex: 1; }
+    .att-toggle { display: flex; gap: 6px; }
+    .att-toggle button { padding: 5px 14px; font-size: 12px; border-radius: 20px; }
+    .btn-present { background: #EAF3DE; color: #3B6D11; border: 1px solid #3B6D11; }
+    .btn-present.selected { background: #3B6D11; color: white; }
+    .btn-absent { background: #FCEBEB; color: #A32D2D; border: 1px solid #A32D2D; }
+    .btn-absent.selected { background: #A32D2D; color: white; }
+    .session-date { font-size: 12px; color: #888; cursor: pointer; }
+    .session-date:hover { text-decoration: underline; }
+    .session-detail { display: none; background: #f9f9f9; padding: 8px; border-radius: 6px; margin-top: 6px; font-size: 12px; }
   </style>
 </head>
 <body>
@@ -90,29 +104,64 @@
 
     <!-- ATTENDANCE -->
     <div class="section active" id="attendance">
-      <div class="card">
-        <h3>Take Attendance</h3>
-        <div class="warn-box">
-          <strong>Instructions for Teachers:</strong><br>
-          Select the course and unit below, then tick <strong>ONLY the ABSENT students</strong> in the list. Everyone you do NOT tick will be automatically marked as present. Then click Submit.
-        </div>
-        <div class="two-col">
-          <div><label>Course</label><input type="text" id="att-course" placeholder="e.g. Business Information Technology" /></div>
-          <div><label>Unit Name</label><input type="text" id="att-unit" placeholder="e.g. Calculus II" /></div>
-        </div>
-        <div class="two-col">
-          <div><label>Semester</label><input type="text" id="att-semester" placeholder="Semester 2" /></div>
-          <div><label>Class Date (auto-filled)</label><input type="date" id="att-date" /></div>
-        </div>
-        <button class="full-btn green-btn" style="margin-top:14px" onclick="loadCourseStudents()">Load Students</button>
-        <div id="att-msg" class="msg"></div>
+      <div class="subnav">
+        <button class="active" onclick="switchAttTab('mark', event)">Mark Attendance</button>
+        <button onclick="switchAttTab('view', event)">View Records</button>
       </div>
 
-      <div id="attendance-list-card" class="hidden card">
-        <h3>Mark Absent Students <span class="small-text">(tick only those who are ABSENT)</span></h3>
-        <div id="attendance-student-list"></div>
-        <button class="full-btn" style="margin-top:16px;background:#0F6E56" onclick="submitAttendance()">Submit Attendance</button>
-        <div id="att-submit-msg" class="msg"></div>
+      <!-- MARK ATTENDANCE -->
+      <div id="att-mark-tab">
+        <div class="card">
+          <h3>Take Attendance</h3>
+          <div class="warn-box">
+            <strong>Instructions:</strong> Select the course and unit, load the student list, then mark each student as <strong>Present</strong> or <strong>Absent</strong>. Click Submit when done.
+          </div>
+          <div class="two-col">
+            <div><label>Course</label><input type="text" id="att-course" placeholder="e.g. Business Information Technology" /></div>
+            <div><label>Unit Name</label><input type="text" id="att-unit" placeholder="e.g. Calculus II" /></div>
+          </div>
+          <div class="two-col">
+            <div><label>Semester</label><input type="text" id="att-semester" placeholder="Semester 2" /></div>
+            <div><label>Class Date</label><input type="date" id="att-date" /></div>
+          </div>
+          <button class="full-btn green-btn" style="margin-top:14px" onclick="loadCourseStudents()">Load Students</button>
+          <div id="att-msg" class="msg"></div>
+        </div>
+
+        <div id="attendance-list-card" class="hidden card">
+          <h3>Mark Each Student <span class="small-text">(everyone must be marked before submitting)</span></h3>
+          <div id="attendance-student-list"></div>
+          <button class="full-btn" style="margin-top:16px;background:#0F6E56" onclick="submitAttendance()">Submit Attendance</button>
+          <div id="att-submit-msg" class="msg"></div>
+        </div>
+      </div>
+
+      <!-- VIEW ATTENDANCE RECORDS -->
+      <div id="att-view-tab" class="hidden">
+        <div class="card">
+          <h3>View Attendance Records</h3>
+          <div class="two-col">
+            <div><label>Course</label><input type="text" id="view-course" placeholder="Business Information Technology" /></div>
+            <div><label>Unit Name (optional)</label><input type="text" id="view-unit" placeholder="Leave blank for all units" /></div>
+          </div>
+          <div class="three-col">
+            <div><label>Semester (optional)</label><input type="text" id="view-semester" placeholder="Semester 2" /></div>
+            <div><label>From Date</label><input type="date" id="view-from" /></div>
+            <div><label>To Date</label><input type="date" id="view-to" /></div>
+          </div>
+          <button class="full-btn green-btn" style="margin-top:14px" onclick="loadAttendanceRecords()">Load Records</button>
+          <div id="view-att-msg" class="msg"></div>
+        </div>
+
+        <div id="att-summary-card" class="hidden card">
+          <h3>Attendance Summary</h3>
+          <div id="att-summary-table"></div>
+        </div>
+
+        <div id="att-sessions-card" class="hidden card">
+          <h3>Session-by-Session History</h3>
+          <div id="att-sessions-table"></div>
+        </div>
       </div>
     </div>
 
@@ -180,7 +229,6 @@
           </select>
           <label>Amount Paid (KSh)</label>
           <input type="number" id="cash-amount" placeholder="5000" />
-
           <div id="cheque-fields" class="hidden payment-extra">
             <div class="two-col">
               <div><label>Cheque Number</label><input type="text" id="cheque-number" placeholder="000123" /></div>
@@ -193,7 +241,6 @@
             <label>Payee Name (on cheque)</label>
             <input type="text" id="cheque-payee" placeholder="Gloryca International College" />
           </div>
-
           <div id="bank-fields" class="hidden payment-extra">
             <div class="two-col">
               <div><label>Bank Name</label><input type="text" id="bank-name" placeholder="KCB Bank" /></div>
@@ -204,7 +251,6 @@
               <div><label>Transfer Date</label><input type="date" id="bank-date" /></div>
             </div>
           </div>
-
           <button class="full-btn" style="margin-top:14px" onclick="recordPayment()">Record Payment</button>
         </div>
         <div id="cash-msg" class="msg"></div>
@@ -249,7 +295,7 @@
       <div class="card">
         <h3>Exam & Materials Fees</h3>
         <div class="info-box">These are tracked completely separately from school fees.</div>
-        <div class="subnav">
+        <div class="subnav exam-subnav">
           <button class="active" onclick="switchExamType('national_exam', event)">National Exams</button>
           <button onclick="switchExamType('internal_exam', event)">Internal Exams</button>
           <button onclick="switchExamType('ream_papers_files', event)">Ream Papers & Files</button>
@@ -298,12 +344,10 @@
         <button class="full-btn" style="margin-top:18px" onclick="registerHostel()">Register to Hostel</button>
         <div id="hostel-msg" class="msg"></div>
       </div>
-
       <div class="card">
         <h3>Hostel-Registered Students</h3>
         <div id="hostel-list">Loading...</div>
       </div>
-
       <div class="card">
         <h3>Record Hostel Payment</h3>
         <div class="two-col">
@@ -339,7 +383,6 @@
         <button class="full-btn" style="margin-top:18px" onclick="addTimetable()">Add Entry</button>
         <div id="tt-msg" class="msg"></div>
       </div>
-
       <div class="card">
         <h3>All Timetable Entries</h3>
         <div id="timetable-list">Loading...</div>
@@ -365,7 +408,6 @@
         <button class="full-btn" style="margin-top:18px" onclick="registerStudent()">Register Student</button>
         <div id="reg-msg" class="msg"></div>
       </div>
-
       <div class="card">
         <h3>All Students</h3>
         <div id="students-list">Loading...</div>
@@ -392,7 +434,6 @@
         <button class="full-btn" style="margin-top:18px" onclick="createEmployee()">Add Employee</button>
         <div id="emp-msg" class="msg"></div>
       </div>
-
       <div class="card">
         <h3>All Employees</h3>
         <div id="employees-list">Loading...</div>
@@ -407,6 +448,8 @@
   var myCode = '';
   var myRole = '';
   var currentExamType = 'national_exam';
+  var loadedStudents = [];
+  var studentStatuses = {};
 
   async function employeeLogin() {
     var code = document.getElementById('emp-code').value;
@@ -457,7 +500,15 @@
     el.className = 'msg ' + (ok ? 'success' : 'error');
   }
 
-  /* ===== ATTENDANCE ===== */
+  /* ===== ATTENDANCE SUB-TABS ===== */
+  function switchAttTab(tab, evt) {
+    document.getElementById('att-mark-tab').classList.toggle('hidden', tab !== 'mark');
+    document.getElementById('att-view-tab').classList.toggle('hidden', tab !== 'view');
+    document.querySelectorAll('#attendance .subnav button').forEach(function(b) { b.classList.remove('active'); });
+    if (evt) evt.target.classList.add('active');
+  }
+
+  /* ===== MARK ATTENDANCE ===== */
   async function loadCourseStudents() {
     var course = document.getElementById('att-course').value.trim();
     var unit = document.getElementById('att-unit').value.trim();
@@ -467,18 +518,38 @@
     var el = document.getElementById('attendance-student-list');
     el.innerHTML = 'Loading...';
     card.classList.remove('hidden');
+    studentStatuses = {};
     try {
       var res = await fetch(API + '/students/by-course/' + encodeURIComponent(course));
       var data = await res.json();
       if (!data.length) { el.innerHTML = '<p style="color:#888;font-size:13px">No students found. Make sure the course name matches exactly.</p>'; return; }
-      var html = '<table><tr><th style="width:40px">Absent</th><th>Student ID</th><th>Name</th></tr>';
-      for (var i = 0; i < data.length; i++) {
-        html += '<tr><td><input type="checkbox" class="absent-check" id="absent-' + data[i].student_id + '" value="' + data[i].student_id + '" style="width:18px;height:18px"></td><td>' + data[i].student_id + '</td><td>' + data[i].full_name + '</td></tr>';
-      }
-      html += '</table>';
-      el.innerHTML = html;
-      showMsg('att-msg', data.length + ' students loaded. Tick only those who are absent.', true);
+      loadedStudents = data;
+      // Default everyone to present
+      for (var i = 0; i < data.length; i++) { studentStatuses[data[i].student_id] = 'present'; }
+      renderStudentList();
+      showMsg('att-msg', data.length + ' students loaded.', true);
     } catch (e) { el.innerHTML = '<p style="color:red;font-size:13px">Connection error.</p>'; }
+  }
+
+  function renderStudentList() {
+    var el = document.getElementById('attendance-student-list');
+    var html = '';
+    for (var i = 0; i < loadedStudents.length; i++) {
+      var s = loadedStudents[i];
+      var status = studentStatuses[s.student_id] || 'present';
+      html += '<div class="att-row">';
+      html += '<div class="att-name">' + s.student_id + ' — ' + s.full_name + '</div>';
+      html += '<div class="att-toggle">';
+      html += '<button class="btn-present' + (status === 'present' ? ' selected' : '') + '" onclick="setStatus(\'' + s.student_id + '\', \'present\')">Present</button>';
+      html += '<button class="btn-absent' + (status === 'absent' ? ' selected' : '') + '" onclick="setStatus(\'' + s.student_id + '\', \'absent\')">Absent</button>';
+      html += '</div></div>';
+    }
+    el.innerHTML = html;
+  }
+
+  function setStatus(studentId, status) {
+    studentStatuses[studentId] = status;
+    renderStudentList();
   }
 
   async function submitAttendance() {
@@ -486,14 +557,87 @@
     var unit = document.getElementById('att-unit').value.trim();
     var semester = document.getElementById('att-semester').value.trim();
     var classDate = document.getElementById('att-date').value;
-    var absentIds = [];
-    document.querySelectorAll('.absent-check:checked').forEach(function(cb) { absentIds.push(cb.value); });
+
+    var records = [];
+    for (var i = 0; i < loadedStudents.length; i++) {
+      var sid = loadedStudents[i].student_id;
+      records.push({ student_id: sid, status: studentStatuses[sid] || 'present' });
+    }
+
     try {
-      var res = await fetch(API + '/admin/attendance/bulk', { method: 'POST', headers: { 'Content-Type': 'application/json' }, body: JSON.stringify({ course: course, unit_name: unit, semester: semester, class_date: classDate, absent_ids: absentIds, requester_code: myCode }) });
+      var res = await fetch(API + '/admin/attendance/bulk', {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({ course: course, unit_name: unit, semester: semester, class_date: classDate, attendance_records: records, requester_code: myCode })
+      });
       var data = await res.json();
       showMsg('att-submit-msg', res.ok ? data.message : data.error, res.ok);
-      if (res.ok) document.querySelectorAll('.absent-check').forEach(function(cb) { cb.checked = false; });
+      if (res.ok) {
+        // Reset all to present after submit
+        for (var j = 0; j < loadedStudents.length; j++) { studentStatuses[loadedStudents[j].student_id] = 'present'; }
+        renderStudentList();
+      }
     } catch (e) { showMsg('att-submit-msg', 'Connection error', false); }
+  }
+
+  /* ===== VIEW ATTENDANCE RECORDS ===== */
+  async function loadAttendanceRecords() {
+    var course = document.getElementById('view-course').value.trim();
+    if (!course) { showMsg('view-att-msg', 'Please enter a course name.', false); return; }
+
+    var unit = document.getElementById('view-unit').value.trim();
+    var semester = document.getElementById('view-semester').value.trim();
+    var from = document.getElementById('view-from').value;
+    var to = document.getElementById('view-to').value;
+
+    try {
+      // Load summary
+      var sumParams = 'course=' + encodeURIComponent(course) + '&requester_code=' + myCode;
+      if (unit) sumParams += '&unit_name=' + encodeURIComponent(unit);
+      if (semester) sumParams += '&semester=' + encodeURIComponent(semester);
+      var sumRes = await fetch(API + '/admin/attendance/summary?' + sumParams);
+      var sumData = await sumRes.json();
+
+      var summaryCard = document.getElementById('att-summary-card');
+      summaryCard.classList.remove('hidden');
+      if (!sumData.length) {
+        document.getElementById('att-summary-table').innerHTML = '<p style="color:#888;font-size:13px">No attendance records found.</p>';
+      } else {
+        var rows = '';
+        for (var i = 0; i < sumData.length; i++) {
+          var a = sumData[i];
+          var pct = parseFloat(a.percentage);
+          var color = pct >= 75 ? '#3B6D11' : (pct >= 60 ? '#854F0B' : '#A32D2D');
+          rows += '<tr><td>' + a.student_id + '</td><td>' + a.full_name + '</td><td>' + a.unit_name + '</td><td>' + a.semester + '</td><td>' + a.classes_attended + '/' + a.total_classes + '</td><td style="color:' + color + ';font-weight:600">' + pct + '%</td></tr>';
+        }
+        document.getElementById('att-summary-table').innerHTML = '<table><tr><th>ID</th><th>Name</th><th>Unit</th><th>Semester</th><th>Attended/Total</th><th>%</th></tr>' + rows + '</table>';
+      }
+
+      // Load sessions
+      var sessParams = 'course=' + encodeURIComponent(course) + '&requester_code=' + myCode;
+      if (unit) sessParams += '&unit_name=' + encodeURIComponent(unit);
+      if (from) sessParams += '&from_date=' + from;
+      if (to) sessParams += '&to_date=' + to;
+      var sessRes = await fetch(API + '/admin/attendance/sessions?' + sessParams);
+      var sessData = await sessRes.json();
+
+      var sessCard = document.getElementById('att-sessions-card');
+      sessCard.classList.remove('hidden');
+      if (!sessData.length) {
+        document.getElementById('att-sessions-table').innerHTML = '<p style="color:#888;font-size:13px">No session records found for this date range.</p>';
+      } else {
+        var srows = '';
+        for (var j = 0; j < sessData.length; j++) {
+          var s = sessData[j];
+          var statusColor = s.status === 'present' ? '#3B6D11' : '#A32D2D';
+          var statusText = s.status === 'present' ? 'Present' : 'Absent';
+          srows += '<tr><td>' + new Date(s.class_date).toLocaleDateString() + '</td><td>' + s.student_id + '</td><td>' + s.full_name + '</td><td>' + s.unit_name + '</td><td><span class="pill ' + (s.status === 'present' ? 'green' : 'red') + '">' + statusText + '</span></td></tr>';
+        }
+        document.getElementById('att-sessions-table').innerHTML = '<table><tr><th>Date</th><th>ID</th><th>Name</th><th>Unit</th><th>Status</th></tr>' + srows + '</table>';
+      }
+
+      showMsg('view-att-msg', 'Records loaded!', true);
+    } catch (e) { showMsg('view-att-msg', 'Connection error', false); }
   }
 
   /* ===== RESULTS ===== */
@@ -614,26 +758,13 @@
     var amount = document.getElementById('cash-amount').value;
     var method = document.getElementById('pay-method').value;
     var details = {};
-
     if (method === 'cheque') {
-      details = {
-        cheque_number: document.getElementById('cheque-number').value,
-        bank_name: document.getElementById('cheque-bank').value,
-        branch: document.getElementById('cheque-branch').value,
-        cheque_date: document.getElementById('cheque-date').value,
-        payee_name: document.getElementById('cheque-payee').value
-      };
+      details = { cheque_number: document.getElementById('cheque-number').value, bank_name: document.getElementById('cheque-bank').value, branch: document.getElementById('cheque-branch').value, cheque_date: document.getElementById('cheque-date').value, payee_name: document.getElementById('cheque-payee').value };
       if (!details.cheque_number || !details.bank_name) { showMsg('cash-msg', 'Please fill in Cheque Number and Bank Name.', false); return; }
     } else if (method === 'bank_transfer') {
-      details = {
-        bank_name: document.getElementById('bank-name').value,
-        reference_number: document.getElementById('bank-ref').value,
-        branch: document.getElementById('bank-branch').value,
-        transfer_date: document.getElementById('bank-date').value
-      };
+      details = { bank_name: document.getElementById('bank-name').value, reference_number: document.getElementById('bank-ref').value, branch: document.getElementById('bank-branch').value, transfer_date: document.getElementById('bank-date').value };
       if (!details.reference_number || !details.bank_name) { showMsg('cash-msg', 'Please fill in Bank Name and Reference Number.', false); return; }
     }
-
     try {
       var res = await fetch(API + '/admin/fees/' + feeId + '/pay', { method: 'PUT', headers: { 'Content-Type': 'application/json' }, body: JSON.stringify({ amount_paid: amount, payment_method: method, payment_details: details, requester_code: myCode }) });
       var data = await res.json();
