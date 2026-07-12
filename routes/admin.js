@@ -213,6 +213,24 @@ router.put('/fees/:id/balance', async (req, res) => {
   } catch (err) { res.status(500).json({ error: err.message }) }
 })
 
+// Set a student's TOTAL outstanding balance directly (overwrites, does not add)
+router.put('/fees/student/:student_id/set-balance', async (req, res) => {
+  const { student_id } = req.params
+  const { new_balance, requester_code } = req.body
+  try {
+    const role = await getRole(requester_code)
+    if (role !== 'chief_admin') return res.status(403).json({ error: 'Only Chief Admin can edit balances' })
+    const fees = await pool.query('SELECT * FROM fees WHERE student_id = $1 ORDER BY created_at DESC', [student_id])
+    if (!fees.rows.length) return res.status(404).json({ error: 'No fee record found for this student' })
+    const target = fees.rows[0]
+    var sumOthers = 0
+    for (var i = 1; i < fees.rows.length; i++) sumOthers += parseFloat(fees.rows[i].balance)
+    const targetNewBalance = parseFloat(new_balance) - sumOthers
+    const updated = await pool.query('UPDATE fees SET balance=$1 WHERE id=$2 RETURNING *', [targetNewBalance, target.id])
+    res.json({ message: 'Balance updated!', fee: updated.rows[0], total_balance: parseFloat(new_balance) })
+  } catch (err) { res.status(500).json({ error: err.message }) }
+})
+
 router.delete('/fees/:id', async (req, res) => {
   const { id } = req.params
   const { requester_code } = req.body
