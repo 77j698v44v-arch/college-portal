@@ -689,7 +689,7 @@
         var st = data.students[i];
         var bal = parseFloat(st.total_balance);
         rows += '<tr><td>' + st.student_id + '</td><td>' + st.full_name + '</td><td>' + (st.course || '—') + '</td><td>KSh ' + parseFloat(st.total_billed).toLocaleString() + '</td><td style="color:#0F6E56">KSh ' + parseFloat(st.total_paid).toLocaleString() + '</td>';
-        rows += '<td><span class="editable-balance" id="bal-display-' + st.student_id + '" onclick="editBalance(\'' + st.student_id + '\')">KSh ' + bal.toLocaleString() + ' &#9998;</span></td>';
+        rows += '<td id="bal-cell-' + st.student_id + '"><span class="editable-balance" onclick="editBalance(\'' + st.student_id + '\', ' + bal + ')">KSh ' + bal.toLocaleString() + ' &#9998;</span></td>';
         rows += '<td><span class="pill ' + (bal <= 0 ? 'green' : 'red') + '">' + (bal <= 0 ? 'Cleared' : 'Owing') + '</span></td></tr>';
       }
       document.getElementById('fees-overview-table').innerHTML = '<table><tr><th>ID</th><th>Name</th><th>Course</th><th>Billed</th><th>Paid</th><th>Balance</th><th>Status</th></tr>' + rows + '</table>';
