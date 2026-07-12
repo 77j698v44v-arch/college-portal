@@ -942,7 +942,7 @@
       var rows = '';
       for (var i = 0; i < data.length; i++) {
         var s = data[i];
-        rows += '<tr><td>' + s.student_id + '</td><td>' + s.full_name + '</td><td>' + (s.course || '—') + '</td><td>' + s.email + '</td><td>' + (s.phone || '—') + '</td><td><button class="red-btn" onclick="deleteStudent(\'' + s.student_id + '\')">Delete</button></td></tr>';
+        rows += '<tr><td>' + s.student_id + '</td><td>' + s.full_name + '</td><td id="course-display-' + s.student_id + '"><span class="editable-balance" onclick="editCourse(\'' + s.student_id + '\', \'' + (s.course || '') + '\')">' + (s.course || '—') + ' &#9998;</span></td><td>' + s.email + '</td><td>' + (s.phone || '—') + '</td><td><button class="red-btn" onclick="deleteStudent(\'' + s.student_id + '\')">Delete</button></td></tr>';
       }
       el.innerHTML = '<table><tr><th>ID</th><th>Name</th><th>Course</th><th>Email</th><th>Phone</th><th></th></tr>' + rows + '</table>';
     } catch (e) { el.innerHTML = '<p style="color:red;font-size:13px">Could not load.</p>'; }
