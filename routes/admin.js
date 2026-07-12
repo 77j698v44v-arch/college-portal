@@ -139,38 +139,7 @@ router.post('/fees/bulk', async (req, res) => {
   } catch (err) { res.status(500).json({ error: err.message }) }
 })
 
-// Record a payment — supports cash, cheque, bank transfer
-router.put('/fees/:id/pay', async (req, res) => {
-  const { id } = req.params
-  const { amount_paid, payment_method, payment_details, requester_code } = req.body
-  try {
-    const role = await getRole(requester_code)
-    if (role !== 'chief_admin') return res.status(403).json({ error: 'Only Chief Admin can record payments' })
-    const existing = await pool.query('SELECT * FROM fees WHERE id = $1', [id])
-    if (!existing.rows.length) return res.status(404).json({ error: 'Fee record not found' })
-    const fee = existing.rows[0]
-    const newPaid = parseFloat(fee.paid) + parseFloat(amount_paid)
-    const newBalance = parseFloat(fee.amount) - newPaid
-    const updated = await pool.query(`UPDATE fees SET paid=$1, balance=$2 WHERE id=$3 RETURNING *`, [newPaid, newBalance, id])
-
-    // Build receipt reference
-    const method = payment_method || 'cash'
-    var receiptRef = 'CASH-' + Date.now()
-    if (method === 'cheque' && payment_details && payment_details.cheque_number) {
-      receiptRef = 'CHQ-' + payment_details.cheque_number
-    } else if (method === 'bank_transfer' && payment_details && payment_details.reference_number) {
-      receiptRef = 'BNK-' + payment_details.reference_number
-    }
-
-    await pool.query(
-      `INSERT INTO payments (student_id, amount, mpesa_receipt, phone, status, payment_method, payment_details)
-       VALUES ($1, $2, $3, $4, 'completed', $5, $6)`,
-      [fee.student_id, amount_paid, receiptRef, method, method, JSON.stringify(payment_details || {})]
-    )
-    res.json({ message: 'Payment recorded!', fee: updated.rows[0] })
-  } catch (err) { res.status(500).json({ error: err.message }) }
-})
-
+// IMPORTANT: specific routes before generic :id routes
 router.get('/fees/overview', async (req, res) => {
   const { requester_code } = req.query
   try {
@@ -199,6 +168,62 @@ router.get('/fees/student/:student_id', async (req, res) => {
   } catch (err) { res.status(500).json({ error: err.message }) }
 })
 
+// Pay endpoint
+router.put('/fees/:id/pay', async (req, res) => {
+  const { id } = req.params
+  const { amount_paid, payment_method, payment_details, requester_code } = req.body
+  try {
+    const role = await getRole(requester_code)
+    if (role !== 'chief_admin') return res.status(403).json({ error: 'Only Chief Admin can record payments' })
+    const existing = await pool.query('SELECT * FROM fees WHERE id = $1', [id])
+    if (!existing.rows.length) return res.status(404).json({ error: 'Fee record not found' })
+    const fee = existing.rows[0]
+    const newPaid = parseFloat(fee.paid) + parseFloat(amount_paid)
+    const newBalance = parseFloat(fee.amount) - newPaid
+    const updated = await pool.query(`UPDATE fees SET paid=$1, balance=$2 WHERE id=$3 RETURNING *`, [newPaid, newBalance, id])
+    const method = payment_method || 'cash'
+    var receiptRef = 'CASH-' + Date.now()
+    if (method === 'cheque' && payment_details && payment_details.cheque_number) {
+      receiptRef = 'CHQ-' + payment_details.cheque_number
+    } else if (method === 'bank_transfer' && payment_details && payment_details.reference_number) {
+      receiptRef = 'BNK-' + payment_details.reference_number
+    }
+    await pool.query(
+      `INSERT INTO payments (student_id, amount, mpesa_receipt, phone, status, payment_method, payment_details)
+       VALUES ($1, $2, $3, $4, 'completed', $5, $6)`,
+      [fee.student_id, amount_paid, receiptRef, method, method, JSON.stringify(payment_details || {})]
+    )
+    res.json({ message: 'Payment recorded!', fee: updated.rows[0] })
+  } catch (err) { res.status(500).json({ error: err.message }) }
+})
+
+// Balance edit endpoint — MUST come after /pay to avoid conflict
+router.put('/fees/:id/balance', async (req, res) => {
+  const { id } = req.params
+  const { new_balance, requester_code } = req.body
+  try {
+    const role = await getRole(requester_code)
+    if (role !== 'chief_admin') return res.status(403).json({ error: 'Only Chief Admin can edit balances' })
+    const updated = await pool.query(
+      `UPDATE fees SET balance=$1 WHERE id=$2 RETURNING *`,
+      [new_balance, id]
+    )
+    if (!updated.rows.length) return res.status(404).json({ error: 'Fee record not found' })
+    res.json({ message: 'Balance updated!', fee: updated.rows[0] })
+  } catch (err) { res.status(500).json({ error: err.message }) }
+})
+
+router.delete('/fees/:id', async (req, res) => {
+  const { id } = req.params
+  const { requester_code } = req.body
+  try {
+    const role = await getRole(requester_code)
+    if (role !== 'chief_admin') return res.status(403).json({ error: 'Only Chief Admin can delete fee records' })
+    await pool.query('DELETE FROM fees WHERE id = $1', [id])
+    res.json({ message: 'Fee record deleted!' })
+  } catch (err) { res.status(500).json({ error: err.message }) }
+})
+
 /* --- TIMETABLE --- */
 router.post('/timetable', async (req, res) => {
   const { unit_name, day, start_time, end_time, room, semester, requester_code } = req.body
@@ -223,6 +248,17 @@ router.get('/timetable/all', async (req, res) => {
   } catch (err) { res.status(500).json({ error: err.message }) }
 })
 
+router.delete('/timetable/:id', async (req, res) => {
+  const { id } = req.params
+  const { requester_code } = req.body
+  try {
+    const role = await getRole(requester_code)
+    if (role !== 'chief_admin') return res.status(403).json({ error: 'Only Chief Admin can delete timetable entries' })
+    await pool.query('DELETE FROM timetable WHERE id = $1', [id])
+    res.json({ message: 'Timetable entry deleted!' })
+  } catch (err) { res.status(500).json({ error: err.message }) }
+})
+
 /* --- STUDENTS --- */
 router.get('/students', async (req, res) => {
   const { requester_code } = req.query
@@ -231,6 +267,18 @@ router.get('/students', async (req, res) => {
     if (role !== 'chief_admin') return res.status(403).json({ error: 'Only Chief Admin can view the student list' })
     const result = await pool.query('SELECT student_id, full_name, email, phone, course, created_at FROM students ORDER BY full_name')
     res.json(result.rows)
+  } catch (err) { res.status(500).json({ error: err.message }) }
+})
+
+// Update student course
+router.put('/students/:student_id/course', async (req, res) => {
+  const { student_id } = req.params
+  const { course, requester_code } = req.body
+  try {
+    const role = await getRole(requester_code)
+    if (role !== 'chief_admin') return res.status(403).json({ error: 'Only Chief Admin can update student courses' })
+    await pool.query('UPDATE students SET course=$1 WHERE student_id=$2', [course, student_id])
+    res.json({ message: 'Course updated!' })
   } catch (err) { res.status(500).json({ error: err.message }) }
 })
 

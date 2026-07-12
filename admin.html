@@ -696,23 +696,34 @@
     } catch (e) { document.getElementById('fees-overview-table').innerHTML = '<p style="color:red;font-size:13px">Could not load.</p>'; }
   }
 
-  async function editBalance(studentId) {
-    var cell = document.getElementById('bal-display-' + studentId);
-    var currentText = cell.textContent.replace('KSh ', '').replace(/,/g, '').replace(' \u270E', '').trim();
-    cell.innerHTML = '<input type="number" id="edit-input-' + studentId + '" value="' + currentText + '" style="width:100px;margin:0;padding:4px 6px;font-size:13px" /> <button onclick="saveBalance(\'' + studentId + '\')" style="padding:4px 10px;font-size:11px">Save</button>';
-    document.getElementById('edit-input-' + studentId).focus();
+  function editBalance(studentId, currentBal) {
+    var cell = document.getElementById('bal-cell-' + studentId);
+    cell.innerHTML = '<input type="number" id="bal-input-' + studentId + '" value="' + currentBal + '" style="width:110px;padding:5px 8px;font-size:13px;margin:0;border:1px solid #0F6E56;border-radius:6px" />' +
+      '<button onclick="saveBalance(\'' + studentId + '\')" style="margin-left:6px;padding:6px 14px;background:#0F6E56;color:white;border:none;border-radius:6px;font-size:12px;cursor:pointer">Save</button>' +
+      '<button onclick="loadFeesOverview()" style="margin-left:4px;padding:6px 10px;background:#eee;color:#555;border:none;border-radius:6px;font-size:12px;cursor:pointer">Cancel</button>';
+    document.getElementById('bal-input-' + studentId).focus();
+    document.getElementById('bal-input-' + studentId).select();
   }
 
   async function saveBalance(studentId) {
-    var newVal = document.getElementById('edit-input-' + studentId).value;
+    var newVal = document.getElementById('bal-input-' + studentId).value;
+    if (newVal === '' || isNaN(newVal)) { alert('Please enter a valid number.'); return; }
     try {
-      var res = await fetch(API + '/admin/fees/student/' + studentId + '?requester_code=' + myCode);
-      var fees = await res.json();
-      if (!fees.length) { alert('No fee record found.'); loadFeesOverview(); return; }
-      var updateRes = await fetch(API + '/admin/fees/' + fees[0].id + '/balance', { method: 'PUT', headers: { 'Content-Type': 'application/json' }, body: JSON.stringify({ new_balance: newVal, requester_code: myCode }) });
+      var feesRes = await fetch(API + '/admin/fees/student/' + studentId + '?requester_code=' + myCode);
+      var fees = await feesRes.json();
+      if (!fees.length) { alert('No fee record found for this student.'); loadFeesOverview(); return; }
+      var targetFee = fees[0];
+      for (var i = 1; i < fees.length; i++) {
+        if (parseFloat(fees[i].balance) > parseFloat(targetFee.balance)) targetFee = fees[i];
+      }
+      var updateRes = await fetch(API + '/admin/fees/' + targetFee.id + '/balance', {
+        method: 'PUT',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({ new_balance: parseFloat(newVal), requester_code: myCode })
+      });
       var data = await updateRes.json();
-      if (updateRes.ok) loadFeesOverview(); else alert(data.error);
-    } catch (e) { alert('Could not save.'); }
+      if (updateRes.ok) { loadFeesOverview(); } else { alert('Error: ' + data.error); }
+    } catch (e) { alert('Connection error. Please try again.'); }
   }
 
   async function loadStudentFees() {
@@ -942,6 +953,28 @@
       }
       el.innerHTML = '<table><tr><th>ID</th><th>Name</th><th>Course</th><th>Email</th><th>Phone</th><th></th></tr>' + rows + '</table>';
     } catch (e) { el.innerHTML = '<p style="color:red;font-size:13px">Could not load.</p>'; }
+  }
+
+  function editCourse(studentId, currentCourse) {
+    var cell = document.getElementById('course-display-' + studentId);
+    cell.innerHTML = '<input type="text" id="course-input-' + studentId + '" value="' + currentCourse + '" style="width:180px;padding:4px 8px;font-size:12px;margin:0;border:1px solid #0F6E56;border-radius:5px" />' +
+      '<button onclick="saveCourse(\'' + studentId + '\')" style="margin-left:4px;padding:4px 10px;background:#0F6E56;color:white;border:none;border-radius:5px;font-size:11px;cursor:pointer">Save</button>' +
+      '<button onclick="loadStudents()" style="margin-left:2px;padding:4px 8px;background:#eee;color:#555;border:none;border-radius:5px;font-size:11px;cursor:pointer">Cancel</button>';
+    document.getElementById('course-input-' + studentId).focus();
+  }
+
+  async function saveCourse(studentId) {
+    var newCourse = document.getElementById('course-input-' + studentId).value.trim();
+    if (!newCourse) { alert('Please enter a course name.'); return; }
+    try {
+      var res = await fetch(API + '/admin/students/' + studentId + '/course', {
+        method: 'PUT',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({ course: newCourse, requester_code: myCode })
+      });
+      var data = await res.json();
+      if (res.ok) { loadStudents(); } else { alert('Error: ' + data.error); }
+    } catch (e) { alert('Connection error.'); }
   }
 
   async function deleteStudent(studentId) {
