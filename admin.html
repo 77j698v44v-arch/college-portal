@@ -20,6 +20,9 @@
     .green-btn:hover { background: #0a5442; }
     .red-btn { background: #A32D2D; font-size: 12px; padding: 5px 10px; border-radius: 5px; }
     .red-btn:hover { background: #7d1f1f; }
+    .edit-btn { background: #0F6E56; color: white; font-size: 11px; padding: 3px 10px; border-radius: 4px; border: none; cursor: pointer; }
+    .save-btn { background: #0F6E56; color: white; font-size: 12px; padding: 5px 12px; border-radius: 5px; border: none; cursor: pointer; }
+    .cancel-btn { background: #eee; color: #555; font-size: 12px; padding: 5px 10px; border-radius: 5px; border: none; cursor: pointer; }
     .error-text { color: red; font-size: 13px; margin-bottom: 10px; text-align: center; }
     #admin-page { display: none; }
     .header { background: #1A1A2E; color: white; padding: 16px 24px; display: flex; justify-content: space-between; align-items: center; }
@@ -28,7 +31,7 @@
     .nav { display: flex; gap: 4px; background: white; padding: 10px 24px; border-bottom: 1px solid #eee; overflow-x: auto; flex-wrap: wrap; }
     .nav button { background: transparent; color: #555; border: none; padding: 8px 16px; border-radius: 6px; cursor: pointer; font-size: 13px; }
     .nav button.active { background: #1A1A2E; color: white; }
-    .content { padding: 24px; max-width: 900px; margin: 0 auto; }
+    .content { padding: 24px; max-width: 960px; margin: 0 auto; }
     .section { display: none; }
     .section.active { display: block; }
     .card { background: white; border-radius: 10px; padding: 24px; margin-bottom: 20px; box-shadow: 0 1px 4px rgba(0,0,0,0.07); }
@@ -54,27 +57,27 @@
     .divider { border: none; border-top: 1px solid #eee; margin: 20px 0; }
     .info-box { background: #E6F1FB; border-radius: 8px; padding: 12px 16px; font-size: 13px; color: #0C447C; margin-bottom: 16px; }
     .warn-box { background: #FFF8E1; border-radius: 8px; padding: 12px 16px; font-size: 13px; color: #7B5800; margin-bottom: 16px; border-left: 3px solid #F9A825; }
-    .editable-balance { cursor: pointer; border-radius: 4px; padding: 2px 6px; }
-    .editable-balance:hover { background: #fff3cd; }
     .subnav { display: flex; gap: 6px; margin-bottom: 20px; flex-wrap: wrap; border-bottom: 2px solid #eee; padding-bottom: 12px; }
-    .subnav button { background: #eee; color: #555; font-size: 13px; padding: 8px 18px; border-radius: 6px; }
+    .subnav button { background: #eee; color: #555; font-size: 13px; padding: 8px 18px; border-radius: 6px; border: none; cursor: pointer; }
     .subnav button.active { background: #1A1A2E; color: white; }
     .exam-subnav button { font-size: 12px; padding: 6px 14px; border-radius: 20px; }
     .small-text { font-size: 12px; color: #888; }
     .payment-extra { background: #f9f9f9; border-radius: 8px; padding: 14px; margin-top: 10px; border: 1px solid #eee; }
-    .payment-extra label { margin-top: 8px; }
     .att-row { display: flex; align-items: center; justify-content: space-between; padding: 10px 8px; border-bottom: 1px solid #f0f0f0; }
     .att-row:last-child { border-bottom: none; }
     .att-name { font-size: 13px; flex: 1; }
     .att-toggle { display: flex; gap: 6px; }
-    .att-toggle button { padding: 5px 14px; font-size: 12px; border-radius: 20px; }
-    .btn-present { background: #EAF3DE; color: #3B6D11; border: 1px solid #3B6D11; }
+    .att-toggle button { padding: 5px 14px; font-size: 12px; border-radius: 20px; border: none; cursor: pointer; }
+    .btn-present { background: #EAF3DE; color: #3B6D11; border: 1px solid #3B6D11 !important; }
     .btn-present.selected { background: #3B6D11; color: white; }
-    .btn-absent { background: #FCEBEB; color: #A32D2D; border: 1px solid #A32D2D; }
+    .btn-absent { background: #FCEBEB; color: #A32D2D; border: 1px solid #A32D2D !important; }
     .btn-absent.selected { background: #A32D2D; color: white; }
-    .session-date { font-size: 12px; color: #888; cursor: pointer; }
-    .session-date:hover { text-decoration: underline; }
-    .session-detail { display: none; background: #f9f9f9; padding: 8px; border-radius: 6px; margin-top: 6px; font-size: 12px; }
+    .inline-input { width: 160px; padding: 4px 8px; font-size: 12px; margin: 0; border: 1px solid #0F6E56; border-radius: 5px; display: inline-block; }
+    .bal-input { width: 110px; padding: 5px 8px; font-size: 13px; margin: 0; border: 1px solid #0F6E56; border-radius: 6px; display: inline-block; }
+    .notice-card { border: 1px solid #eee; border-radius: 8px; padding: 14px; margin-bottom: 10px; }
+    .notice-card h4 { font-size: 14px; margin-bottom: 6px; color: #1A1A2E; }
+    .notice-card p { font-size: 13px; color: #555; margin-bottom: 8px; }
+    .notice-meta { font-size: 11px; color: #aaa; }
   </style>
 </head>
 <body>
@@ -99,23 +102,18 @@
     </div>
   </div>
   <nav class="nav" id="nav-bar"></nav>
-
   <div class="content">
 
     <!-- ATTENDANCE -->
     <div class="section active" id="attendance">
       <div class="subnav">
-        <button class="active" onclick="switchAttTab('mark', event)">Mark Attendance</button>
-        <button onclick="switchAttTab('view', event)">View Records</button>
+        <button class="active" onclick="switchAttTab('mark',event)">Mark Attendance</button>
+        <button onclick="switchAttTab('view',event)">View Records</button>
       </div>
-
-      <!-- MARK ATTENDANCE -->
       <div id="att-mark-tab">
         <div class="card">
           <h3>Take Attendance</h3>
-          <div class="warn-box">
-            <strong>Instructions:</strong> Select the course and unit, load the student list, then mark each student as <strong>Present</strong> or <strong>Absent</strong>. Click Submit when done.
-          </div>
+          <div class="warn-box"><strong>Instructions:</strong> Select course and unit, load the list, then mark each student <strong>Present</strong> or <strong>Absent</strong>. Click Submit when done.</div>
           <div class="two-col">
             <div><label>Course</label><input type="text" id="att-course" placeholder="e.g. Business Information Technology" /></div>
             <div><label>Unit Name</label><input type="text" id="att-unit" placeholder="e.g. Calculus II" /></div>
@@ -127,16 +125,13 @@
           <button class="full-btn green-btn" style="margin-top:14px" onclick="loadCourseStudents()">Load Students</button>
           <div id="att-msg" class="msg"></div>
         </div>
-
         <div id="attendance-list-card" class="hidden card">
           <h3>Mark Each Student <span class="small-text">(everyone must be marked before submitting)</span></h3>
           <div id="attendance-student-list"></div>
-          <button class="full-btn" style="margin-top:16px;background:#0F6E56" onclick="submitAttendance()">Submit Attendance</button>
+          <button class="full-btn green-btn" style="margin-top:16px" onclick="submitAttendance()">Submit Attendance</button>
           <div id="att-submit-msg" class="msg"></div>
         </div>
       </div>
-
-      <!-- VIEW ATTENDANCE RECORDS -->
       <div id="att-view-tab" class="hidden">
         <div class="card">
           <h3>View Attendance Records</h3>
@@ -152,12 +147,10 @@
           <button class="full-btn green-btn" style="margin-top:14px" onclick="loadAttendanceRecords()">Load Records</button>
           <div id="view-att-msg" class="msg"></div>
         </div>
-
         <div id="att-summary-card" class="hidden card">
           <h3>Attendance Summary</h3>
           <div id="att-summary-table"></div>
         </div>
-
         <div id="att-sessions-card" class="hidden card">
           <h3>Session-by-Session History</h3>
           <div id="att-sessions-table"></div>
@@ -167,40 +160,93 @@
 
     <!-- RESULTS -->
     <div class="section" id="results">
-      <div class="card">
-        <h3>Add Exam Result</h3>
-        <div class="two-col">
-          <div><label>Student ID</label><input type="text" id="res-id" placeholder="WC-2024001" /></div>
-          <div><label>Unit Name</label><input type="text" id="res-unit" placeholder="Calculus II" /></div>
-        </div>
-        <div class="two-col">
-          <div><label>CAT Score</label><input type="number" id="res-cat" placeholder="28" /></div>
-          <div><label>Exam Score</label><input type="number" id="res-exam" placeholder="62" /></div>
-        </div>
-        <div class="two-col">
-          <div><label>Total Score</label><input type="number" id="res-total" placeholder="90" /></div>
-          <div><label>Grade</label><input type="text" id="res-grade" placeholder="A" /></div>
-        </div>
-        <label>Semester</label>
-        <input type="text" id="res-semester" placeholder="Semester 2" />
-        <button class="full-btn" style="margin-top:18px" onclick="addResult()">Add Result</button>
-        <div id="res-msg" class="msg"></div>
+      <div class="subnav">
+        <button class="active" onclick="switchResultsTab('add',event)">Add Result</button>
+        <button onclick="switchResultsTab('view',event)">View Results</button>
       </div>
 
-      <div class="card">
-        <h3>View / Delete Results by Student</h3>
-        <div class="two-col">
-          <div><label>Student ID</label><input type="text" id="res-lookup-id" placeholder="WC-2024001" /></div>
-          <div style="display:flex;align-items:flex-end"><button class="full-btn green-btn" onclick="loadStudentResults()">Load Results</button></div>
+      <div id="results-add-tab">
+        <div class="card">
+          <h3>Add Exam Result</h3>
+          <div class="two-col">
+            <div><label>Student ID</label><input type="text" id="res-id" placeholder="WC-2024001" /></div>
+            <div><label>Unit Name</label><input type="text" id="res-unit" placeholder="Calculus II" /></div>
+          </div>
+          <div class="two-col">
+            <div><label>CAT Score</label><input type="number" id="res-cat" placeholder="28" /></div>
+            <div><label>Exam Score</label><input type="number" id="res-exam" placeholder="62" /></div>
+          </div>
+          <div class="two-col">
+            <div><label>Total Score</label><input type="number" id="res-total" placeholder="90" /></div>
+            <div><label>Grade</label><input type="text" id="res-grade" placeholder="A" /></div>
+          </div>
+          <div class="two-col">
+            <div><label>Year</label>
+              <select id="res-year">
+                <option value="">— Select Year —</option>
+                <option value="Year 1">Year 1</option>
+                <option value="Year 2">Year 2</option>
+                <option value="Year 3">Year 3</option>
+                <option value="Year 4">Year 4</option>
+              </select>
+            </div>
+            <div><label>Semester</label>
+              <select id="res-semester">
+                <option value="">— Select Semester —</option>
+                <option value="Semester 1">Semester 1</option>
+                <option value="Semester 2">Semester 2</option>
+                <option value="Semester 3">Semester 3</option>
+              </select>
+            </div>
+          </div>
+          <button class="full-btn" style="margin-top:18px" onclick="addResult()">Add Result</button>
+          <div id="res-msg" class="msg"></div>
         </div>
-        <div id="results-list" style="margin-top:16px"></div>
+        <div class="card">
+          <h3>Delete Results by Student ID</h3>
+          <div class="two-col">
+            <div><label>Student ID</label><input type="text" id="res-lookup-id" placeholder="WC-2024001" /></div>
+            <div style="display:flex;align-items:flex-end"><button class="full-btn green-btn" onclick="loadStudentResults()">Load Results</button></div>
+          </div>
+          <div id="results-list" style="margin-top:16px"></div>
+        </div>
+      </div>
+
+      <div id="results-view-tab" class="hidden">
+        <div class="card">
+          <h3>View Results by Course</h3>
+          <label>Course Name</label>
+          <input type="text" id="view-res-course" placeholder="Business Information Technology" />
+          <div class="two-col">
+            <div><label>Filter by Year (optional)</label>
+              <select id="view-res-year">
+                <option value="">All Years</option>
+                <option value="Year 1">Year 1</option>
+                <option value="Year 2">Year 2</option>
+                <option value="Year 3">Year 3</option>
+                <option value="Year 4">Year 4</option>
+              </select>
+            </div>
+            <div><label>Filter by Semester (optional)</label>
+              <select id="view-res-semester">
+                <option value="">All Semesters</option>
+                <option value="Semester 1">Semester 1</option>
+                <option value="Semester 2">Semester 2</option>
+                <option value="Semester 3">Semester 3</option>
+              </select>
+            </div>
+          </div>
+          <button class="full-btn green-btn" style="margin-top:14px" onclick="loadCourseResults()">Load Results</button>
+          <div id="view-res-msg" class="msg"></div>
+          <div id="course-results-table" style="margin-top:16px"></div>
+        </div>
       </div>
     </div>
 
     <!-- FEES -->
     <div class="section" id="fees">
       <div class="card">
-        <h3>Fees Overview <span class="small-text">(click any balance to edit it directly)</span></h3>
+        <h3>Fees Overview <span class="small-text">(click ✎ Edit next to any balance to change it)</span></h3>
         <div class="stat-grid">
           <div class="stat"><div class="slabel">Total Billed</div><div class="svalue" id="ov-billed">—</div></div>
           <div class="stat"><div class="slabel">Total Collected</div><div class="svalue" style="color:#0F6E56" id="ov-paid">—</div></div>
@@ -208,9 +254,7 @@
         </div>
         <div id="fees-overview-table">Loading...</div>
       </div>
-
       <hr class="divider">
-
       <div class="card">
         <h3>Record Payment</h3>
         <div class="two-col">
@@ -238,7 +282,7 @@
               <div><label>Branch</label><input type="text" id="cheque-branch" placeholder="Nairobi CBD" /></div>
               <div><label>Cheque Date</label><input type="date" id="cheque-date" /></div>
             </div>
-            <label>Payee Name (on cheque)</label>
+            <label>Payee Name</label>
             <input type="text" id="cheque-payee" placeholder="Gloryca International College" />
           </div>
           <div id="bank-fields" class="hidden payment-extra">
@@ -251,13 +295,11 @@
               <div><label>Transfer Date</label><input type="date" id="bank-date" /></div>
             </div>
           </div>
-          <button class="full-btn" style="margin-top:14px" onclick="recordPayment()">Record Payment</button>
+          <button class="full-btn green-btn" style="margin-top:14px" onclick="recordPayment()">Record Payment</button>
         </div>
         <div id="cash-msg" class="msg"></div>
       </div>
-
       <hr class="divider">
-
       <div class="card">
         <h3>Add Fee — Single Student</h3>
         <div class="two-col">
@@ -271,9 +313,7 @@
         <button class="full-btn" style="margin-top:18px" onclick="addFee()">Add Fee Record</button>
         <div id="fee-msg" class="msg"></div>
       </div>
-
       <hr class="divider">
-
       <div class="card">
         <h3>Bulk Add Fee — By Course</h3>
         <div class="info-box">This will add a fee record for every student enrolled in the selected course.</div>
@@ -294,14 +334,13 @@
     <div class="section" id="exams">
       <div class="card">
         <h3>Exam & Materials Fees</h3>
-        <div class="info-box">These are tracked completely separately from school fees.</div>
+        <div class="info-box">Tracked separately from school fees.</div>
         <div class="subnav exam-subnav">
-          <button class="active" onclick="switchExamType('national_exam', event)">National Exams</button>
-          <button onclick="switchExamType('internal_exam', event)">Internal Exams</button>
-          <button onclick="switchExamType('ream_papers_files', event)">Ream Papers & Files</button>
+          <button class="active" onclick="switchExamType('national_exam',event)">National Exams</button>
+          <button onclick="switchExamType('internal_exam',event)">Internal Exams</button>
+          <button onclick="switchExamType('ream_papers_files',event)">Ream Papers & Files</button>
         </div>
-        <label>Student ID</label>
-        <input type="text" id="exam-fee-id" placeholder="WC-2024001" />
+        <label>Student ID</label><input type="text" id="exam-fee-id" placeholder="WC-2024001" />
         <div class="two-col">
           <div><label>Amount (KSh)</label><input type="number" id="exam-fee-amount" placeholder="2000" /></div>
           <div><label>Semester</label><input type="text" id="exam-fee-semester" placeholder="Semester 2" /></div>
@@ -309,7 +348,6 @@
         <button class="full-btn" style="margin-top:18px" onclick="addExamFee()">Add Arrears Record</button>
         <div id="exam-fee-msg" class="msg"></div>
       </div>
-
       <div class="card">
         <h3>View / Pay / Delete Exam Fee Records</h3>
         <div class="two-col">
@@ -318,11 +356,9 @@
         </div>
         <div id="exam-fee-records" style="margin-top:16px"></div>
         <div id="exam-pay-form" class="hidden" style="margin-top:16px">
-          <label>Record</label>
-          <select id="exam-pay-fee-id"></select>
-          <label>Amount Paid (KSh)</label>
-          <input type="number" id="exam-pay-amount" placeholder="500" />
-          <button class="full-btn" style="margin-top:12px" onclick="recordExamPayment()">Record Payment</button>
+          <label>Record</label><select id="exam-pay-fee-id"></select>
+          <label>Amount Paid (KSh)</label><input type="number" id="exam-pay-amount" placeholder="500" />
+          <button class="full-btn green-btn" style="margin-top:12px" onclick="recordExamPayment()">Record Payment</button>
         </div>
         <div id="exam-pay-msg" class="msg"></div>
       </div>
@@ -365,20 +401,21 @@
         <h3>Add Timetable Entry</h3>
         <div class="two-col">
           <div><label>Unit Name</label><input type="text" id="tt-unit" placeholder="Calculus II" /></div>
+          <div><label>Course</label><input type="text" id="tt-course" placeholder="Business Information Technology" /></div>
+        </div>
+        <div class="two-col">
           <div><label>Day</label>
             <select id="tt-day">
               <option>Monday</option><option>Tuesday</option><option>Wednesday</option>
               <option>Thursday</option><option>Friday</option><option>Saturday</option>
             </select>
           </div>
+          <div><label>Semester</label><input type="text" id="tt-semester" placeholder="Semester 2" /></div>
         </div>
-        <div class="two-col">
+        <div class="three-col">
           <div><label>Start Time</label><input type="time" id="tt-start" /></div>
           <div><label>End Time</label><input type="time" id="tt-end" /></div>
-        </div>
-        <div class="two-col">
           <div><label>Room</label><input type="text" id="tt-room" placeholder="LH 4" /></div>
-          <div><label>Semester</label><input type="text" id="tt-semester" placeholder="Semester 2" /></div>
         </div>
         <button class="full-btn" style="margin-top:18px" onclick="addTimetable()">Add Entry</button>
         <div id="tt-msg" class="msg"></div>
@@ -440,586 +477,610 @@
       </div>
     </div>
 
+    <!-- NOTICES -->
+    <div class="section" id="notices">
+      <div class="card">
+        <h3>Post a Notice</h3>
+        <label>Title</label>
+        <input type="text" id="notice-title" placeholder="e.g. Exam Timetable Released" />
+        <label>Message</label>
+        <textarea id="notice-message" placeholder="Type your notice here..." style="width:100%;padding:10px 14px;border:1px solid #ddd;border-radius:8px;font-size:14px;height:100px;resize:vertical;font-family:Arial,sans-serif;margin-bottom:14px"></textarea>
+        <label>Target Audience</label>
+        <select id="notice-target">
+          <option value="all">All Students</option>
+          <option value="course">Specific Course</option>
+        </select>
+        <div id="notice-course-field" class="hidden">
+          <label>Course Name</label>
+          <input type="text" id="notice-course" placeholder="Business Information Technology" />
+        </div>
+        <button class="full-btn green-btn" style="margin-top:14px" onclick="postNotice()">Post Notice</button>
+        <div id="notice-msg" class="msg"></div>
+      </div>
+      <div class="card">
+        <h3>All Notices</h3>
+        <div id="notices-list">Loading...</div>
+      </div>
+    </div>
+
   </div>
 </div>
 
 <script>
-  var API = 'https://college-portal-production-4e3e.up.railway.app/api';
-  var myCode = '';
-  var myRole = '';
-  var currentExamType = 'national_exam';
-  var loadedStudents = [];
-  var studentStatuses = {};
+var API = 'https://college-portal-production-4e3e.up.railway.app/api';
+var myCode = '', myRole = '';
+var currentExamType = 'national_exam';
+var loadedStudents = [], studentStatuses = {};
 
-  async function employeeLogin() {
-    var code = document.getElementById('emp-code').value;
-    var idnum = document.getElementById('emp-id').value;
-    var err = document.getElementById('login-error');
-    err.classList.add('hidden');
-    try {
-      var res = await fetch(API + '/employees/login', { method: 'POST', headers: { 'Content-Type': 'application/json' }, body: JSON.stringify({ employee_code: code, id_number: idnum }) });
-      var data = await res.json();
-      if (!res.ok) { err.textContent = data.error; err.classList.remove('hidden'); return; }
-      myCode = data.employee_code;
-      myRole = data.role;
-      document.getElementById('staff-name').textContent = data.full_name + ' (' + (data.role === 'chief_admin' ? 'Chief Admin' : 'Teacher') + ')';
-      document.getElementById('login-page').style.display = 'none';
-      document.getElementById('admin-page').style.display = 'block';
-      var today = new Date().toISOString().split('T')[0];
-      document.getElementById('att-date').value = today;
-      buildNav();
-    } catch (e) { err.textContent = 'Cannot connect to server'; err.classList.remove('hidden'); }
+async function employeeLogin() {
+  var code = document.getElementById('emp-code').value;
+  var idnum = document.getElementById('emp-id').value;
+  var err = document.getElementById('login-error');
+  err.classList.add('hidden');
+  try {
+    var res = await fetch(API+'/employees/login',{method:'POST',headers:{'Content-Type':'application/json'},body:JSON.stringify({employee_code:code,id_number:idnum})});
+    var data = await res.json();
+    if (!res.ok) { err.textContent=data.error; err.classList.remove('hidden'); return; }
+    myCode=data.employee_code; myRole=data.role;
+    document.getElementById('staff-name').textContent=data.full_name+' ('+(myRole==='chief_admin'?'Chief Admin':'Teacher')+')';
+    document.getElementById('login-page').style.display='none';
+    document.getElementById('admin-page').style.display='block';
+    document.getElementById('att-date').value=new Date().toISOString().split('T')[0];
+    buildNav();
+  } catch(e) { err.textContent='Cannot connect to server'; err.classList.remove('hidden'); }
+}
+
+function buildNav() {
+  var nav=document.getElementById('nav-bar');
+  var html='<button class="active" onclick="showTab(\'attendance\',event)">Attendance</button>';
+  html+='<button onclick="showTab(\'results\',event)">Results</button>';
+  if (myRole==='chief_admin') {
+    html+='<button onclick="showTab(\'fees\',event)">Fees</button>';
+    html+='<button onclick="showTab(\'exams\',event)">Exams</button>';
+    html+='<button onclick="showTab(\'hostel\',event)">Hostel</button>';
+    html+='<button onclick="showTab(\'timetable\',event)">Timetable</button>';
+    html+='<button onclick="showTab(\'students\',event)">Students</button>';
+    html+='<button onclick="showTab(\'employees\',event)">Employees</button>';
+    html+='<button onclick="showTab(\'notices\',event)">Notices</button>';
   }
+  nav.innerHTML=html;
+  if (myRole==='chief_admin') { loadFeesOverview(); loadHostelList(); loadTimetableList(); loadStudents(); loadEmployees(); loadNotices(); }
+}
 
-  function buildNav() {
-    var nav = document.getElementById('nav-bar');
-    var html = '<button class="active" onclick="showTab(\'attendance\', event)">Attendance</button>';
-    html += '<button onclick="showTab(\'results\', event)">Results</button>';
-    if (myRole === 'chief_admin') {
-      html += '<button onclick="showTab(\'fees\', event)">Fees</button>';
-      html += '<button onclick="showTab(\'exams\', event)">Exams</button>';
-      html += '<button onclick="showTab(\'hostel\', event)">Hostel</button>';
-      html += '<button onclick="showTab(\'timetable\', event)">Timetable</button>';
-      html += '<button onclick="showTab(\'students\', event)">Students</button>';
-      html += '<button onclick="showTab(\'employees\', event)">Employees</button>';
-    }
-    nav.innerHTML = html;
-    if (myRole === 'chief_admin') { loadFeesOverview(); loadHostelList(); loadTimetableList(); loadStudents(); loadEmployees(); }
-  }
+function showTab(tab,evt) {
+  document.querySelectorAll('.section').forEach(function(s){s.classList.remove('active');});
+  document.querySelectorAll('.nav button').forEach(function(b){b.classList.remove('active');});
+  document.getElementById(tab).classList.add('active');
+  if (evt) evt.target.classList.add('active');
+}
 
-  function showTab(tab, evt) {
-    document.querySelectorAll('.section').forEach(function(s) { s.classList.remove('active'); });
-    document.querySelectorAll('.nav button').forEach(function(b) { b.classList.remove('active'); });
-    document.getElementById(tab).classList.add('active');
-    if (evt) evt.target.classList.add('active');
-  }
+function showMsg(id,text,ok) {
+  var el=document.getElementById(id);
+  el.textContent=text;
+  el.className='msg '+(ok?'success':'error');
+}
 
-  function showMsg(elId, text, ok) {
-    var el = document.getElementById(elId);
-    el.textContent = text;
-    el.className = 'msg ' + (ok ? 'success' : 'error');
-  }
+/* ATTENDANCE */
+function switchAttTab(tab,evt) {
+  document.getElementById('att-mark-tab').classList.toggle('hidden',tab!=='mark');
+  document.getElementById('att-view-tab').classList.toggle('hidden',tab!=='view');
+  document.querySelectorAll('#attendance .subnav button').forEach(function(b){b.classList.remove('active');});
+  if (evt) evt.target.classList.add('active');
+}
 
-  /* ===== ATTENDANCE SUB-TABS ===== */
-  function switchAttTab(tab, evt) {
-    document.getElementById('att-mark-tab').classList.toggle('hidden', tab !== 'mark');
-    document.getElementById('att-view-tab').classList.toggle('hidden', tab !== 'view');
-    document.querySelectorAll('#attendance .subnav button').forEach(function(b) { b.classList.remove('active'); });
-    if (evt) evt.target.classList.add('active');
-  }
-
-  /* ===== MARK ATTENDANCE ===== */
-  async function loadCourseStudents() {
-    var course = document.getElementById('att-course').value.trim();
-    var unit = document.getElementById('att-unit').value.trim();
-    var semester = document.getElementById('att-semester').value.trim();
-    if (!course || !unit || !semester) { showMsg('att-msg', 'Please fill in Course, Unit, and Semester first.', false); return; }
-    var card = document.getElementById('attendance-list-card');
-    var el = document.getElementById('attendance-student-list');
-    el.innerHTML = 'Loading...';
-    card.classList.remove('hidden');
-    studentStatuses = {};
-    try {
-      var res = await fetch(API + '/students/by-course/' + encodeURIComponent(course));
-      var data = await res.json();
-      if (!data.length) { el.innerHTML = '<p style="color:#888;font-size:13px">No students found. Make sure the course name matches exactly.</p>'; return; }
-      loadedStudents = data;
-      // Default everyone to present
-      for (var i = 0; i < data.length; i++) { studentStatuses[data[i].student_id] = 'present'; }
-      renderStudentList();
-      showMsg('att-msg', data.length + ' students loaded.', true);
-    } catch (e) { el.innerHTML = '<p style="color:red;font-size:13px">Connection error.</p>'; }
-  }
-
-  function renderStudentList() {
-    var el = document.getElementById('attendance-student-list');
-    var html = '';
-    for (var i = 0; i < loadedStudents.length; i++) {
-      var s = loadedStudents[i];
-      var status = studentStatuses[s.student_id] || 'present';
-      html += '<div class="att-row">';
-      html += '<div class="att-name">' + s.student_id + ' — ' + s.full_name + '</div>';
-      html += '<div class="att-toggle">';
-      html += '<button class="btn-present' + (status === 'present' ? ' selected' : '') + '" onclick="setStatus(\'' + s.student_id + '\', \'present\')">Present</button>';
-      html += '<button class="btn-absent' + (status === 'absent' ? ' selected' : '') + '" onclick="setStatus(\'' + s.student_id + '\', \'absent\')">Absent</button>';
-      html += '</div></div>';
-    }
-    el.innerHTML = html;
-  }
-
-  function setStatus(studentId, status) {
-    studentStatuses[studentId] = status;
+async function loadCourseStudents() {
+  var course=document.getElementById('att-course').value.trim();
+  var unit=document.getElementById('att-unit').value.trim();
+  var semester=document.getElementById('att-semester').value.trim();
+  if (!course||!unit||!semester) { showMsg('att-msg','Please fill in Course, Unit, and Semester.',false); return; }
+  var card=document.getElementById('attendance-list-card');
+  var el=document.getElementById('attendance-student-list');
+  el.innerHTML='Loading...'; card.classList.remove('hidden'); studentStatuses={};
+  try {
+    var res=await fetch(API+'/students/by-course/'+encodeURIComponent(course));
+    var data=await res.json();
+    if (!data.length) { el.innerHTML='<p style="color:#888;font-size:13px">No students found. Check course name.</p>'; return; }
+    loadedStudents=data;
+    for (var i=0;i<data.length;i++) studentStatuses[data[i].student_id]='present';
     renderStudentList();
+    showMsg('att-msg',data.length+' students loaded.',true);
+  } catch(e) { el.innerHTML='<p style="color:red;font-size:13px">Connection error.</p>'; }
+}
+
+function renderStudentList() {
+  var el=document.getElementById('attendance-student-list');
+  var html='';
+  for (var i=0;i<loadedStudents.length;i++) {
+    var s=loadedStudents[i]; var status=studentStatuses[s.student_id]||'present';
+    html+='<div class="att-row"><div class="att-name">'+s.student_id+' — '+s.full_name+'</div><div class="att-toggle">';
+    html+='<button class="btn-present'+(status==='present'?' selected':'')+'" onclick="setStatus(\''+s.student_id+'\',\'present\')">Present</button>';
+    html+='<button class="btn-absent'+(status==='absent'?' selected':'')+'" onclick="setStatus(\''+s.student_id+'\',\'absent\')">Absent</button>';
+    html+='</div></div>';
   }
+  el.innerHTML=html;
+}
 
-  async function submitAttendance() {
-    var course = document.getElementById('att-course').value.trim();
-    var unit = document.getElementById('att-unit').value.trim();
-    var semester = document.getElementById('att-semester').value.trim();
-    var classDate = document.getElementById('att-date').value;
+function setStatus(sid,status) { studentStatuses[sid]=status; renderStudentList(); }
 
-    var records = [];
-    for (var i = 0; i < loadedStudents.length; i++) {
-      var sid = loadedStudents[i].student_id;
-      records.push({ student_id: sid, status: studentStatuses[sid] || 'present' });
+async function submitAttendance() {
+  var course=document.getElementById('att-course').value.trim();
+  var unit=document.getElementById('att-unit').value.trim();
+  var semester=document.getElementById('att-semester').value.trim();
+  var classDate=document.getElementById('att-date').value;
+  var records=[];
+  for (var i=0;i<loadedStudents.length;i++) records.push({student_id:loadedStudents[i].student_id,status:studentStatuses[loadedStudents[i].student_id]||'present'});
+  try {
+    var res=await fetch(API+'/admin/attendance/bulk',{method:'POST',headers:{'Content-Type':'application/json'},body:JSON.stringify({course:course,unit_name:unit,semester:semester,class_date:classDate,attendance_records:records,requester_code:myCode})});
+    var data=await res.json();
+    showMsg('att-submit-msg',res.ok?data.message:data.error,res.ok);
+    if (res.ok) { for (var j=0;j<loadedStudents.length;j++) studentStatuses[loadedStudents[j].student_id]='present'; renderStudentList(); }
+  } catch(e) { showMsg('att-submit-msg','Connection error',false); }
+}
+
+async function loadAttendanceRecords() {
+  var course=document.getElementById('view-course').value.trim();
+  if (!course) { showMsg('view-att-msg','Please enter a course name.',false); return; }
+  var unit=document.getElementById('view-unit').value.trim();
+  var semester=document.getElementById('view-semester').value.trim();
+  var from=document.getElementById('view-from').value;
+  var to=document.getElementById('view-to').value;
+  try {
+    var sumParams='course='+encodeURIComponent(course)+'&requester_code='+myCode;
+    if (unit) sumParams+='&unit_name='+encodeURIComponent(unit);
+    if (semester) sumParams+='&semester='+encodeURIComponent(semester);
+    var sumRes=await fetch(API+'/admin/attendance/summary?'+sumParams);
+    var sumData=await sumRes.json();
+    document.getElementById('att-summary-card').classList.remove('hidden');
+    if (!sumData.length) { document.getElementById('att-summary-table').innerHTML='<p style="color:#888;font-size:13px">No records found.</p>'; }
+    else {
+      var rows='';
+      for (var i=0;i<sumData.length;i++) {
+        var a=sumData[i]; var pct=parseFloat(a.percentage);
+        var color=pct>=75?'#3B6D11':(pct>=60?'#854F0B':'#A32D2D');
+        rows+='<tr><td>'+a.student_id+'</td><td>'+a.full_name+'</td><td>'+a.unit_name+'</td><td>'+a.semester+'</td><td>'+a.classes_attended+'/'+a.total_classes+'</td><td style="color:'+color+';font-weight:600">'+pct+'%</td></tr>';
+      }
+      document.getElementById('att-summary-table').innerHTML='<table><tr><th>ID</th><th>Name</th><th>Unit</th><th>Semester</th><th>Attended/Total</th><th>%</th></tr>'+rows+'</table>';
     }
-
-    try {
-      var res = await fetch(API + '/admin/attendance/bulk', {
-        method: 'POST',
-        headers: { 'Content-Type': 'application/json' },
-        body: JSON.stringify({ course: course, unit_name: unit, semester: semester, class_date: classDate, attendance_records: records, requester_code: myCode })
-      });
-      var data = await res.json();
-      showMsg('att-submit-msg', res.ok ? data.message : data.error, res.ok);
-      if (res.ok) {
-        // Reset all to present after submit
-        for (var j = 0; j < loadedStudents.length; j++) { studentStatuses[loadedStudents[j].student_id] = 'present'; }
-        renderStudentList();
+    var sessParams='course='+encodeURIComponent(course)+'&requester_code='+myCode;
+    if (unit) sessParams+='&unit_name='+encodeURIComponent(unit);
+    if (from) sessParams+='&from_date='+from;
+    if (to) sessParams+='&to_date='+to;
+    var sessRes=await fetch(API+'/admin/attendance/sessions?'+sessParams);
+    var sessData=await sessRes.json();
+    document.getElementById('att-sessions-card').classList.remove('hidden');
+    if (!sessData.length) { document.getElementById('att-sessions-table').innerHTML='<p style="color:#888;font-size:13px">No session records found.</p>'; }
+    else {
+      var srows='';
+      for (var j=0;j<sessData.length;j++) {
+        var ss=sessData[j];
+        srows+='<tr><td>'+new Date(ss.class_date).toLocaleDateString()+'</td><td>'+ss.student_id+'</td><td>'+ss.full_name+'</td><td>'+ss.unit_name+'</td><td><span class="pill '+(ss.status==='present'?'green':'red')+'">'+(ss.status==='present'?'Present':'Absent')+'</span></td></tr>';
       }
-    } catch (e) { showMsg('att-submit-msg', 'Connection error', false); }
-  }
-
-  /* ===== VIEW ATTENDANCE RECORDS ===== */
-  async function loadAttendanceRecords() {
-    var course = document.getElementById('view-course').value.trim();
-    if (!course) { showMsg('view-att-msg', 'Please enter a course name.', false); return; }
-
-    var unit = document.getElementById('view-unit').value.trim();
-    var semester = document.getElementById('view-semester').value.trim();
-    var from = document.getElementById('view-from').value;
-    var to = document.getElementById('view-to').value;
-
-    try {
-      // Load summary
-      var sumParams = 'course=' + encodeURIComponent(course) + '&requester_code=' + myCode;
-      if (unit) sumParams += '&unit_name=' + encodeURIComponent(unit);
-      if (semester) sumParams += '&semester=' + encodeURIComponent(semester);
-      var sumRes = await fetch(API + '/admin/attendance/summary?' + sumParams);
-      var sumData = await sumRes.json();
-
-      var summaryCard = document.getElementById('att-summary-card');
-      summaryCard.classList.remove('hidden');
-      if (!sumData.length) {
-        document.getElementById('att-summary-table').innerHTML = '<p style="color:#888;font-size:13px">No attendance records found.</p>';
-      } else {
-        var rows = '';
-        for (var i = 0; i < sumData.length; i++) {
-          var a = sumData[i];
-          var pct = parseFloat(a.percentage);
-          var color = pct >= 75 ? '#3B6D11' : (pct >= 60 ? '#854F0B' : '#A32D2D');
-          rows += '<tr><td>' + a.student_id + '</td><td>' + a.full_name + '</td><td>' + a.unit_name + '</td><td>' + a.semester + '</td><td>' + a.classes_attended + '/' + a.total_classes + '</td><td style="color:' + color + ';font-weight:600">' + pct + '%</td></tr>';
-        }
-        document.getElementById('att-summary-table').innerHTML = '<table><tr><th>ID</th><th>Name</th><th>Unit</th><th>Semester</th><th>Attended/Total</th><th>%</th></tr>' + rows + '</table>';
-      }
-
-      // Load sessions
-      var sessParams = 'course=' + encodeURIComponent(course) + '&requester_code=' + myCode;
-      if (unit) sessParams += '&unit_name=' + encodeURIComponent(unit);
-      if (from) sessParams += '&from_date=' + from;
-      if (to) sessParams += '&to_date=' + to;
-      var sessRes = await fetch(API + '/admin/attendance/sessions?' + sessParams);
-      var sessData = await sessRes.json();
-
-      var sessCard = document.getElementById('att-sessions-card');
-      sessCard.classList.remove('hidden');
-      if (!sessData.length) {
-        document.getElementById('att-sessions-table').innerHTML = '<p style="color:#888;font-size:13px">No session records found for this date range.</p>';
-      } else {
-        var srows = '';
-        for (var j = 0; j < sessData.length; j++) {
-          var s = sessData[j];
-          var statusColor = s.status === 'present' ? '#3B6D11' : '#A32D2D';
-          var statusText = s.status === 'present' ? 'Present' : 'Absent';
-          srows += '<tr><td>' + new Date(s.class_date).toLocaleDateString() + '</td><td>' + s.student_id + '</td><td>' + s.full_name + '</td><td>' + s.unit_name + '</td><td><span class="pill ' + (s.status === 'present' ? 'green' : 'red') + '">' + statusText + '</span></td></tr>';
-        }
-        document.getElementById('att-sessions-table').innerHTML = '<table><tr><th>Date</th><th>ID</th><th>Name</th><th>Unit</th><th>Status</th></tr>' + srows + '</table>';
-      }
-
-      showMsg('view-att-msg', 'Records loaded!', true);
-    } catch (e) { showMsg('view-att-msg', 'Connection error', false); }
-  }
-
-  /* ===== RESULTS ===== */
-  async function addResult() {
-    var body = { student_id: document.getElementById('res-id').value, unit_name: document.getElementById('res-unit').value, cat_score: document.getElementById('res-cat').value, exam_score: document.getElementById('res-exam').value, total_score: document.getElementById('res-total').value, grade: document.getElementById('res-grade').value, semester: document.getElementById('res-semester').value, requester_code: myCode };
-    try { var res = await fetch(API + '/admin/results', { method: 'POST', headers: { 'Content-Type': 'application/json' }, body: JSON.stringify(body) }); var data = await res.json(); showMsg('res-msg', res.ok ? 'Result added!' : data.error, res.ok); } catch (e) { showMsg('res-msg', 'Connection error', false); }
-  }
-
-  async function loadStudentResults() {
-    var sid = document.getElementById('res-lookup-id').value;
-    var el = document.getElementById('results-list');
-    el.innerHTML = 'Loading...';
-    try {
-      var res = await fetch(API + '/admin/results/student/' + sid + '?requester_code=' + myCode);
-      var data = await res.json();
-      if (!res.ok) { el.innerHTML = '<p style="color:red;font-size:13px">' + data.error + '</p>'; return; }
-      if (!data.length) { el.innerHTML = '<p style="color:#888;font-size:13px">No results found.</p>'; return; }
-      var rows = '';
-      for (var i = 0; i < data.length; i++) {
-        var r = data[i];
-        rows += '<tr><td>' + r.unit_name + '</td><td>' + r.semester + '</td><td>' + r.cat_score + '</td><td>' + r.exam_score + '</td><td>' + r.total_score + '</td><td>' + r.grade + '</td><td><button class="red-btn" onclick="deleteResult(' + r.id + ')">Delete</button></td></tr>';
-      }
-      el.innerHTML = '<table><tr><th>Unit</th><th>Semester</th><th>CAT</th><th>Exam</th><th>Total</th><th>Grade</th><th></th></tr>' + rows + '</table>';
-    } catch (e) { el.innerHTML = '<p style="color:red;font-size:13px">Connection error.</p>'; }
-  }
-
-  async function deleteResult(id) {
-    if (!confirm('Delete this result?')) return;
-    try {
-      var res = await fetch(API + '/admin/results/' + id, { method: 'DELETE', headers: { 'Content-Type': 'application/json' }, body: JSON.stringify({ requester_code: myCode }) });
-      var data = await res.json();
-      if (res.ok) loadStudentResults(); else alert(data.error);
-    } catch (e) { alert('Connection error.'); }
-  }
-
-  /* ===== FEES ===== */
-  async function loadFeesOverview() {
-    try {
-      var res = await fetch(API + '/admin/fees/overview?requester_code=' + myCode);
-      var data = await res.json();
-      if (!res.ok) { document.getElementById('fees-overview-table').innerHTML = '<p style="color:red;font-size:13px">' + data.error + '</p>'; return; }
-      var s = data.summary;
-      document.getElementById('ov-billed').textContent = 'KSh ' + parseFloat(s.grand_total).toLocaleString();
-      document.getElementById('ov-paid').textContent = 'KSh ' + parseFloat(s.grand_paid).toLocaleString();
-      document.getElementById('ov-balance').textContent = 'KSh ' + parseFloat(s.grand_balance).toLocaleString();
-      if (!data.students.length) { document.getElementById('fees-overview-table').innerHTML = '<p style="color:#888;font-size:13px">No fee records yet.</p>'; return; }
-      var rows = '';
-      for (var i = 0; i < data.students.length; i++) {
-        var st = data.students[i];
-        var bal = parseFloat(st.total_balance);
-        rows += '<tr><td>' + st.student_id + '</td><td>' + st.full_name + '</td><td>' + (st.course || '—') + '</td><td>KSh ' + parseFloat(st.total_billed).toLocaleString() + '</td><td style="color:#0F6E56">KSh ' + parseFloat(st.total_paid).toLocaleString() + '</td>';
-        rows += '<td id="bal-cell-' + st.student_id + '"><span class="editable-balance" onclick="editBalance(\'' + st.student_id + '\', ' + bal + ')">KSh ' + bal.toLocaleString() + ' &#9998;</span></td>';
-        rows += '<td><span class="pill ' + (bal <= 0 ? 'green' : 'red') + '">' + (bal <= 0 ? 'Cleared' : 'Owing') + '</span></td></tr>';
-      }
-      document.getElementById('fees-overview-table').innerHTML = '<table><tr><th>ID</th><th>Name</th><th>Course</th><th>Billed</th><th>Paid</th><th>Balance</th><th>Status</th></tr>' + rows + '</table>';
-    } catch (e) { document.getElementById('fees-overview-table').innerHTML = '<p style="color:red;font-size:13px">Could not load.</p>'; }
-  }
-
-  function editBalance(studentId, currentBal) {
-    var cell = document.getElementById('bal-cell-' + studentId);
-    cell.innerHTML = '<input type="number" id="bal-input-' + studentId + '" value="' + currentBal + '" style="width:110px;padding:5px 8px;font-size:13px;margin:0;border:1px solid #0F6E56;border-radius:6px" />' +
-      '<button onclick="saveBalance(\'' + studentId + '\')" style="margin-left:6px;padding:6px 14px;background:#0F6E56;color:white;border:none;border-radius:6px;font-size:12px;cursor:pointer">Save</button>' +
-      '<button onclick="loadFeesOverview()" style="margin-left:4px;padding:6px 10px;background:#eee;color:#555;border:none;border-radius:6px;font-size:12px;cursor:pointer">Cancel</button>';
-    document.getElementById('bal-input-' + studentId).focus();
-    document.getElementById('bal-input-' + studentId).select();
-  }
-
-  async function saveBalance(studentId) {
-    var newVal = document.getElementById('bal-input-' + studentId).value;
-    if (newVal === '' || isNaN(newVal)) { alert('Please enter a valid number.'); return; }
-    try {
-      var updateRes = await fetch(API + '/admin/fees/student/' + studentId + '/set-balance', {
-        method: 'PUT',
-        headers: { 'Content-Type': 'application/json' },
-        body: JSON.stringify({ new_balance: parseFloat(newVal), requester_code: myCode })
-      });
-      var data = await updateRes.json();
-      if (updateRes.ok) { loadFeesOverview(); } else { alert('Error: ' + data.error); }
-    } catch (e) { alert('Connection error. Please try again.'); }
-  }
-
-  async function loadStudentFees() {
-    var sid = document.getElementById('cash-student-id').value;
-    var el = document.getElementById('student-fee-records');
-    var form = document.getElementById('cash-pay-form');
-    form.classList.add('hidden');
-    el.innerHTML = 'Loading...';
-    try {
-      var res = await fetch(API + '/admin/fees/student/' + sid + '?requester_code=' + myCode);
-      var data = await res.json();
-      if (!res.ok) { el.innerHTML = '<p style="color:red;font-size:13px">' + data.error + '</p>'; return; }
-      if (!data.length) { el.innerHTML = '<p style="color:#888;font-size:13px">No fee records for this student.</p>'; return; }
-      var rows = '', selectOptions = '';
-      for (var i = 0; i < data.length; i++) {
-        var f = data[i];
-        rows += '<tr><td>' + f.semester + '</td><td>KSh ' + parseFloat(f.amount).toLocaleString() + '</td><td style="color:#0F6E56">KSh ' + parseFloat(f.paid).toLocaleString() + '</td><td style="color:#A32D2D;font-weight:600">KSh ' + parseFloat(f.balance).toLocaleString() + '</td><td><button class="red-btn" onclick="deleteFeeRecord(' + f.id + ')">Delete</button></td></tr>';
-        selectOptions += '<option value="' + f.id + '">' + f.semester + ' — Bal: KSh ' + parseFloat(f.balance).toLocaleString() + '</option>';
-      }
-      el.innerHTML = '<table><tr><th>Semester</th><th>Total</th><th>Paid</th><th>Balance</th><th></th></tr>' + rows + '</table>';
-      document.getElementById('cash-fee-id').innerHTML = selectOptions;
-      form.classList.remove('hidden');
-    } catch (e) { el.innerHTML = '<p style="color:red;font-size:13px">Connection error.</p>'; }
-  }
-
-  async function deleteFeeRecord(id) {
-    if (!confirm('Delete this fee record?')) return;
-    try {
-      var res = await fetch(API + '/admin/fees/' + id, { method: 'DELETE', headers: { 'Content-Type': 'application/json' }, body: JSON.stringify({ requester_code: myCode }) });
-      var data = await res.json();
-      if (res.ok) { loadStudentFees(); loadFeesOverview(); } else alert(data.error);
-    } catch (e) { alert('Connection error.'); }
-  }
-
-  function togglePaymentFields() {
-    var method = document.getElementById('pay-method').value;
-    document.getElementById('cheque-fields').classList.toggle('hidden', method !== 'cheque');
-    document.getElementById('bank-fields').classList.toggle('hidden', method !== 'bank_transfer');
-  }
-
-  async function recordPayment() {
-    var feeId = document.getElementById('cash-fee-id').value;
-    var amount = document.getElementById('cash-amount').value;
-    var method = document.getElementById('pay-method').value;
-    var details = {};
-    if (method === 'cheque') {
-      details = { cheque_number: document.getElementById('cheque-number').value, bank_name: document.getElementById('cheque-bank').value, branch: document.getElementById('cheque-branch').value, cheque_date: document.getElementById('cheque-date').value, payee_name: document.getElementById('cheque-payee').value };
-      if (!details.cheque_number || !details.bank_name) { showMsg('cash-msg', 'Please fill in Cheque Number and Bank Name.', false); return; }
-    } else if (method === 'bank_transfer') {
-      details = { bank_name: document.getElementById('bank-name').value, reference_number: document.getElementById('bank-ref').value, branch: document.getElementById('bank-branch').value, transfer_date: document.getElementById('bank-date').value };
-      if (!details.reference_number || !details.bank_name) { showMsg('cash-msg', 'Please fill in Bank Name and Reference Number.', false); return; }
+      document.getElementById('att-sessions-table').innerHTML='<table><tr><th>Date</th><th>ID</th><th>Name</th><th>Unit</th><th>Status</th></tr>'+srows+'</table>';
     }
-    try {
-      var res = await fetch(API + '/admin/fees/' + feeId + '/pay', { method: 'PUT', headers: { 'Content-Type': 'application/json' }, body: JSON.stringify({ amount_paid: amount, payment_method: method, payment_details: details, requester_code: myCode }) });
-      var data = await res.json();
-      var label = method === 'cheque' ? 'Cheque' : (method === 'bank_transfer' ? 'Bank Transfer' : 'Cash');
-      showMsg('cash-msg', res.ok ? label + ' payment of KSh ' + parseFloat(amount).toLocaleString() + ' recorded!' : data.error, res.ok);
-      if (res.ok) { loadStudentFees(); loadFeesOverview(); }
-    } catch (e) { showMsg('cash-msg', 'Connection error', false); }
-  }
+    showMsg('view-att-msg','Records loaded!',true);
+  } catch(e) { showMsg('view-att-msg','Connection error',false); }
+}
 
-  async function addFee() {
-    var body = { student_id: document.getElementById('fee-id').value, amount: document.getElementById('fee-amount').value, semester: document.getElementById('fee-semester').value, due_date: document.getElementById('fee-due').value, requester_code: myCode };
-    try { var res = await fetch(API + '/admin/fees', { method: 'POST', headers: { 'Content-Type': 'application/json' }, body: JSON.stringify(body) }); var data = await res.json(); showMsg('fee-msg', res.ok ? 'Fee record added!' : data.error, res.ok); if (res.ok) loadFeesOverview(); } catch (e) { showMsg('fee-msg', 'Connection error', false); }
-  }
+/* RESULTS */
+function switchResultsTab(tab,evt) {
+  document.getElementById('results-add-tab').classList.toggle('hidden',tab!=='add');
+  document.getElementById('results-view-tab').classList.toggle('hidden',tab!=='view');
+  document.querySelectorAll('#results .subnav button').forEach(function(b){b.classList.remove('active');});
+  if (evt) evt.target.classList.add('active');
+}
 
-  async function bulkAddFee() {
-    var body = { course: document.getElementById('bulk-course').value, amount: document.getElementById('bulk-amount').value, semester: document.getElementById('bulk-semester').value, due_date: document.getElementById('bulk-due').value, requester_code: myCode };
-    try { var res = await fetch(API + '/admin/fees/bulk', { method: 'POST', headers: { 'Content-Type': 'application/json' }, body: JSON.stringify(body) }); var data = await res.json(); showMsg('bulk-msg', res.ok ? data.message : data.error, res.ok); if (res.ok) loadFeesOverview(); } catch (e) { showMsg('bulk-msg', 'Connection error', false); }
-  }
+async function addResult() {
+  var body={student_id:document.getElementById('res-id').value,unit_name:document.getElementById('res-unit').value,cat_score:document.getElementById('res-cat').value,exam_score:document.getElementById('res-exam').value,total_score:document.getElementById('res-total').value,grade:document.getElementById('res-grade').value,year:document.getElementById('res-year').value,semester:document.getElementById('res-semester').value,requester_code:myCode};
+  try { var res=await fetch(API+'/admin/results',{method:'POST',headers:{'Content-Type':'application/json'},body:JSON.stringify(body)}); var data=await res.json(); showMsg('res-msg',res.ok?'Result added!':data.error,res.ok); } catch(e) { showMsg('res-msg','Connection error',false); }
+}
 
-  /* ===== EXAM FEES ===== */
-  function switchExamType(type, evt) {
-    currentExamType = type;
-    document.querySelectorAll('#exams .subnav button').forEach(function(b) { b.classList.remove('active'); });
-    if (evt) evt.target.classList.add('active');
-  }
+async function loadStudentResults() {
+  var sid=document.getElementById('res-lookup-id').value;
+  var el=document.getElementById('results-list');
+  el.innerHTML='Loading...';
+  try {
+    var res=await fetch(API+'/admin/results/student/'+sid+'?requester_code='+myCode);
+    var data=await res.json();
+    if (!res.ok) { el.innerHTML='<p style="color:red;font-size:13px">'+data.error+'</p>'; return; }
+    if (!data.length) { el.innerHTML='<p style="color:#888;font-size:13px">No results found.</p>'; return; }
+    var rows='';
+    for (var i=0;i<data.length;i++) {
+      var r=data[i];
+      rows+='<tr><td>'+r.unit_name+'</td><td>'+(r.year||'—')+'</td><td>'+(r.semester||'—')+'</td><td>'+r.cat_score+'</td><td>'+r.exam_score+'</td><td>'+r.total_score+'</td><td>'+r.grade+'</td><td><button class="red-btn" onclick="deleteResult('+r.id+')">Delete</button></td></tr>';
+    }
+    el.innerHTML='<table><tr><th>Unit</th><th>Year</th><th>Semester</th><th>CAT</th><th>Exam</th><th>Total</th><th>Grade</th><th></th></tr>'+rows+'</table>';
+  } catch(e) { el.innerHTML='<p style="color:red;font-size:13px">Connection error.</p>'; }
+}
 
-  function examTypeLabel(t) {
-    if (t === 'national_exam') return 'National Exam';
-    if (t === 'internal_exam') return 'Internal Exam';
-    return 'Ream Papers & Files';
-  }
+async function deleteResult(id) {
+  if (!confirm('Delete this result?')) return;
+  try { var res=await fetch(API+'/admin/results/'+id,{method:'DELETE',headers:{'Content-Type':'application/json'},body:JSON.stringify({requester_code:myCode})}); var data=await res.json(); if (res.ok) loadStudentResults(); else alert(data.error); } catch(e) { alert('Connection error.'); }
+}
 
-  async function addExamFee() {
-    var body = { student_id: document.getElementById('exam-fee-id').value, fee_type: currentExamType, amount: document.getElementById('exam-fee-amount').value, semester: document.getElementById('exam-fee-semester').value, requester_code: myCode };
-    try { var res = await fetch(API + '/admin/exam-fees', { method: 'POST', headers: { 'Content-Type': 'application/json' }, body: JSON.stringify(body) }); var data = await res.json(); showMsg('exam-fee-msg', res.ok ? 'Arrears record added!' : data.error, res.ok); } catch (e) { showMsg('exam-fee-msg', 'Connection error', false); }
-  }
+async function loadCourseResults() {
+  var course=document.getElementById('view-res-course').value.trim();
+  if (!course) { showMsg('view-res-msg','Please enter a course name.',false); return; }
+  var year=document.getElementById('view-res-year').value;
+  var semester=document.getElementById('view-res-semester').value;
+  var el=document.getElementById('course-results-table');
+  el.innerHTML='Loading...';
+  try {
+    var params='requester_code='+myCode;
+    if (year) params+='&year='+encodeURIComponent(year);
+    if (semester) params+='&semester='+encodeURIComponent(semester);
+    var res=await fetch(API+'/admin/results/course/'+encodeURIComponent(course)+'?'+params);
+    var data=await res.json();
+    if (!res.ok) { el.innerHTML='<p style="color:red;font-size:13px">'+data.error+'</p>'; return; }
+    if (!data.length) { el.innerHTML='<p style="color:#888;font-size:13px">No results found for this course.</p>'; showMsg('view-res-msg','No results found.',false); return; }
+    var rows='';
+    for (var i=0;i<data.length;i++) {
+      var r=data[i]; var passed=parseFloat(r.total_score)>=50;
+      rows+='<tr><td>'+r.student_id+'</td><td>'+r.full_name+'</td><td>'+r.unit_name+'</td><td>'+(r.year||'—')+'</td><td>'+(r.semester||'—')+'</td><td>'+r.cat_score+'</td><td>'+r.exam_score+'</td><td>'+r.total_score+'</td><td>'+r.grade+'</td><td><span class="pill '+(passed?'green':'red')+'">'+(passed?'Pass':'Fail')+'</span></td></tr>';
+    }
+    el.innerHTML='<table><tr><th>ID</th><th>Name</th><th>Unit</th><th>Year</th><th>Semester</th><th>CAT</th><th>Exam</th><th>Total</th><th>Grade</th><th>Status</th></tr>'+rows+'</table>';
+    showMsg('view-res-msg',data.length+' results loaded.',true);
+  } catch(e) { el.innerHTML='<p style="color:red;font-size:13px">Connection error.</p>'; }
+}
 
-  async function loadExamFeesForStudent() {
-    var sid = document.getElementById('exam-pay-student-id').value;
-    var el = document.getElementById('exam-fee-records');
-    var form = document.getElementById('exam-pay-form');
-    form.classList.add('hidden');
-    el.innerHTML = 'Loading...';
-    try {
-      var res = await fetch(API + '/admin/exam-fees/student/' + sid);
-      var data = await res.json();
-      if (!data.length) { el.innerHTML = '<p style="color:#888;font-size:13px">No exam/materials fee records.</p>'; return; }
-      var rows = '', selectOptions = '';
-      for (var i = 0; i < data.length; i++) {
-        var f = data[i];
-        rows += '<tr><td>' + examTypeLabel(f.fee_type) + '</td><td>' + f.semester + '</td><td>KSh ' + parseFloat(f.amount).toLocaleString() + '</td><td style="color:#0F6E56">KSh ' + parseFloat(f.paid).toLocaleString() + '</td><td style="color:#A32D2D;font-weight:600">KSh ' + parseFloat(f.balance).toLocaleString() + '</td><td><button class="red-btn" onclick="deleteExamFee(' + f.id + ')">Delete</button></td></tr>';
-        selectOptions += '<option value="' + f.id + '">' + examTypeLabel(f.fee_type) + ' — ' + f.semester + ' — Bal: KSh ' + parseFloat(f.balance).toLocaleString() + '</option>';
-      }
-      el.innerHTML = '<table><tr><th>Type</th><th>Semester</th><th>Total</th><th>Paid</th><th>Balance</th><th></th></tr>' + rows + '</table>';
-      document.getElementById('exam-pay-fee-id').innerHTML = selectOptions;
-      form.classList.remove('hidden');
-    } catch (e) { el.innerHTML = '<p style="color:red;font-size:13px">Connection error.</p>'; }
-  }
+/* FEES */
+async function loadFeesOverview() {
+  try {
+    var res=await fetch(API+'/admin/fees/overview?requester_code='+myCode);
+    var data=await res.json();
+    if (!res.ok) { document.getElementById('fees-overview-table').innerHTML='<p style="color:red;font-size:13px">'+data.error+'</p>'; return; }
+    var s=data.summary;
+    document.getElementById('ov-billed').textContent='KSh '+parseFloat(s.grand_total).toLocaleString();
+    document.getElementById('ov-paid').textContent='KSh '+parseFloat(s.grand_paid).toLocaleString();
+    document.getElementById('ov-balance').textContent='KSh '+parseFloat(s.grand_balance).toLocaleString();
+    if (!data.students.length) { document.getElementById('fees-overview-table').innerHTML='<p style="color:#888;font-size:13px">No fee records yet.</p>'; return; }
+    var rows='';
+    for (var i=0;i<data.students.length;i++) {
+      var st=data.students[i]; var bal=parseFloat(st.total_balance);
+      rows+='<tr><td>'+st.student_id+'</td><td>'+st.full_name+'</td><td>'+(st.course||'—')+'</td><td>KSh '+parseFloat(st.total_billed).toLocaleString()+'</td><td style="color:#0F6E56">KSh '+parseFloat(st.total_paid).toLocaleString()+'</td>';
+      rows+='<td id="bal-cell-'+st.student_id+'" style="white-space:nowrap"><span style="color:#A32D2D;font-weight:600">KSh '+bal.toLocaleString()+'</span> <button class="edit-btn" onclick="editBalance(\''+st.student_id+'\','+bal+')">&#9998; Edit</button></td>';
+      rows+='<td><span class="pill '+(bal<=0?'green':'red')+'">'+(bal<=0?'Cleared':'Owing')+'</span></td></tr>';
+    }
+    document.getElementById('fees-overview-table').innerHTML='<table><tr><th>ID</th><th>Name</th><th>Course</th><th>Billed</th><th>Paid</th><th>Balance</th><th>Status</th></tr>'+rows+'</table>';
+  } catch(e) { document.getElementById('fees-overview-table').innerHTML='<p style="color:red;font-size:13px">Could not load.</p>'; }
+}
 
-  async function deleteExamFee(id) {
-    if (!confirm('Delete this exam fee record?')) return;
-    try {
-      var res = await fetch(API + '/admin/exam-fees/' + id, { method: 'DELETE', headers: { 'Content-Type': 'application/json' }, body: JSON.stringify({ requester_code: myCode }) });
-      var data = await res.json();
-      if (res.ok) loadExamFeesForStudent(); else alert(data.error);
-    } catch (e) { alert('Connection error.'); }
-  }
+function editBalance(studentId,currentBal) {
+  var cell=document.getElementById('bal-cell-'+studentId);
+  cell.innerHTML='<input class="bal-input" type="number" id="bal-input-'+studentId+'" value="'+currentBal+'" /> <button class="save-btn" onclick="saveBalance(\''+studentId+'\')">Save</button> <button class="cancel-btn" onclick="loadFeesOverview()">Cancel</button>';
+  document.getElementById('bal-input-'+studentId).focus();
+  document.getElementById('bal-input-'+studentId).select();
+}
 
-  async function recordExamPayment() {
-    var feeId = document.getElementById('exam-pay-fee-id').value;
-    var amount = document.getElementById('exam-pay-amount').value;
-    try {
-      var res = await fetch(API + '/admin/exam-fees/' + feeId + '/pay', { method: 'PUT', headers: { 'Content-Type': 'application/json' }, body: JSON.stringify({ amount_paid: amount, requester_code: myCode }) });
-      var data = await res.json();
-      showMsg('exam-pay-msg', res.ok ? 'Payment recorded!' : data.error, res.ok);
-      if (res.ok) loadExamFeesForStudent();
-    } catch (e) { showMsg('exam-pay-msg', 'Connection error', false); }
-  }
+async function saveBalance(studentId) {
+  var input=document.getElementById('bal-input-'+studentId);
+  if (!input) { alert('Input not found.'); return; }
+  var newVal=parseFloat(input.value);
+  if (isNaN(newVal)) { alert('Please enter a valid number.'); return; }
+  try {
+    var feesRes=await fetch(API+'/admin/fees/student/'+studentId+'?requester_code='+myCode);
+    var fees=await feesRes.json();
+    if (!fees.length) { alert('No fee record found.'); loadFeesOverview(); return; }
+    var targetFee=fees[0];
+    for (var i=1;i<fees.length;i++) { if (parseFloat(fees[i].balance)>parseFloat(targetFee.balance)) targetFee=fees[i]; }
+    var updateRes=await fetch(API+'/admin/fees/'+targetFee.id+'/balance',{method:'PUT',headers:{'Content-Type':'application/json'},body:JSON.stringify({new_balance:newVal,requester_code:myCode})});
+    var data=await updateRes.json();
+    if (updateRes.ok) loadFeesOverview(); else alert('Error: '+data.error);
+  } catch(e) { alert('Connection error.'); }
+}
 
-  /* ===== HOSTEL ===== */
-  async function registerHostel() {
-    var body = { student_id: document.getElementById('hostel-id').value, room_details: document.getElementById('hostel-room').value, amount: document.getElementById('hostel-amount').value, semester: document.getElementById('hostel-semester').value, requester_code: myCode };
-    try { var res = await fetch(API + '/admin/hostel', { method: 'POST', headers: { 'Content-Type': 'application/json' }, body: JSON.stringify(body) }); var data = await res.json(); showMsg('hostel-msg', res.ok ? 'Student registered to hostel!' : data.error, res.ok); if (res.ok) loadHostelList(); } catch (e) { showMsg('hostel-msg', 'Connection error', false); }
-  }
+async function loadStudentFees() {
+  var sid=document.getElementById('cash-student-id').value;
+  var el=document.getElementById('student-fee-records');
+  var form=document.getElementById('cash-pay-form');
+  form.classList.add('hidden'); el.innerHTML='Loading...';
+  try {
+    var res=await fetch(API+'/admin/fees/student/'+sid+'?requester_code='+myCode);
+    var data=await res.json();
+    if (!res.ok) { el.innerHTML='<p style="color:red;font-size:13px">'+data.error+'</p>'; return; }
+    if (!data.length) { el.innerHTML='<p style="color:#888;font-size:13px">No fee records for this student.</p>'; return; }
+    var rows='',opts='';
+    for (var i=0;i<data.length;i++) {
+      var f=data[i];
+      rows+='<tr><td>'+f.semester+'</td><td>KSh '+parseFloat(f.amount).toLocaleString()+'</td><td style="color:#0F6E56">KSh '+parseFloat(f.paid).toLocaleString()+'</td><td style="color:#A32D2D;font-weight:600">KSh '+parseFloat(f.balance).toLocaleString()+'</td><td><button class="red-btn" onclick="deleteFeeRecord('+f.id+')">Delete</button></td></tr>';
+      opts+='<option value="'+f.id+'">'+f.semester+' — Bal: KSh '+parseFloat(f.balance).toLocaleString()+'</option>';
+    }
+    el.innerHTML='<table><tr><th>Semester</th><th>Total</th><th>Paid</th><th>Balance</th><th></th></tr>'+rows+'</table>';
+    document.getElementById('cash-fee-id').innerHTML=opts;
+    form.classList.remove('hidden');
+  } catch(e) { el.innerHTML='<p style="color:red;font-size:13px">Connection error.</p>'; }
+}
 
-  async function loadHostelList() {
-    var el = document.getElementById('hostel-list');
-    try {
-      var res = await fetch(API + '/admin/hostel/all?requester_code=' + myCode);
-      var data = await res.json();
-      if (!res.ok) { el.innerHTML = '<p style="color:red;font-size:13px">' + data.error + '</p>'; return; }
-      if (!data.length) { el.innerHTML = '<p style="color:#888;font-size:13px">No students registered to hostel yet.</p>'; return; }
-      var rows = '';
-      for (var i = 0; i < data.length; i++) {
-        var h = data[i];
-        rows += '<tr><td>' + h.student_id + '</td><td>' + h.full_name + '</td><td>' + (h.room_details || '—') + '</td><td>KSh ' + parseFloat(h.amount).toLocaleString() + '</td><td style="color:#0F6E56">KSh ' + parseFloat(h.paid).toLocaleString() + '</td><td style="color:#A32D2D;font-weight:600">KSh ' + parseFloat(h.balance).toLocaleString() + '</td><td><button class="red-btn" onclick="removeFromHostel(\'' + h.student_id + '\')">Remove</button></td></tr>';
-      }
-      el.innerHTML = '<table><tr><th>ID</th><th>Name</th><th>Room</th><th>Total</th><th>Paid</th><th>Balance</th><th></th></tr>' + rows + '</table>';
-    } catch (e) { el.innerHTML = '<p style="color:red;font-size:13px">Could not load.</p>'; }
-  }
+async function deleteFeeRecord(id) {
+  if (!confirm('Delete this fee record?')) return;
+  try { var res=await fetch(API+'/admin/fees/'+id,{method:'DELETE',headers:{'Content-Type':'application/json'},body:JSON.stringify({requester_code:myCode})}); var data=await res.json(); if (res.ok) { loadStudentFees(); loadFeesOverview(); } else alert(data.error); } catch(e) { alert('Connection error.'); }
+}
 
-  async function removeFromHostel(studentId) {
-    if (!confirm('Remove this student from hostel?')) return;
-    try {
-      var res = await fetch(API + '/admin/hostel/' + studentId, { method: 'DELETE', headers: { 'Content-Type': 'application/json' }, body: JSON.stringify({ requester_code: myCode }) });
-      var data = await res.json();
-      if (res.ok) loadHostelList(); else alert(data.error);
-    } catch (e) { alert('Connection error.'); }
-  }
+function togglePaymentFields() {
+  var method=document.getElementById('pay-method').value;
+  document.getElementById('cheque-fields').classList.toggle('hidden',method!=='cheque');
+  document.getElementById('bank-fields').classList.toggle('hidden',method!=='bank_transfer');
+}
 
-  async function recordHostelPayment() {
-    var sid = document.getElementById('hostel-pay-id').value;
-    var amount = document.getElementById('hostel-pay-amount').value;
-    try {
-      var allRes = await fetch(API + '/admin/hostel/all?requester_code=' + myCode);
-      var all = await allRes.json();
-      var match = null;
-      for (var i = 0; i < all.length; i++) { if (all[i].student_id === sid) { match = all[i]; break; } }
-      if (!match) { showMsg('hostel-pay-msg', 'Student is not registered to hostel.', false); return; }
-      var res = await fetch(API + '/admin/hostel/' + match.id + '/pay', { method: 'PUT', headers: { 'Content-Type': 'application/json' }, body: JSON.stringify({ amount_paid: amount, requester_code: myCode }) });
-      var data = await res.json();
-      showMsg('hostel-pay-msg', res.ok ? 'Payment recorded!' : data.error, res.ok);
-      if (res.ok) loadHostelList();
-    } catch (e) { showMsg('hostel-pay-msg', 'Connection error', false); }
+async function recordPayment() {
+  var feeId=document.getElementById('cash-fee-id').value;
+  var amount=document.getElementById('cash-amount').value;
+  var method=document.getElementById('pay-method').value;
+  var details={};
+  if (method==='cheque') {
+    details={cheque_number:document.getElementById('cheque-number').value,bank_name:document.getElementById('cheque-bank').value,branch:document.getElementById('cheque-branch').value,cheque_date:document.getElementById('cheque-date').value,payee_name:document.getElementById('cheque-payee').value};
+    if (!details.cheque_number||!details.bank_name) { showMsg('cash-msg','Please fill in Cheque Number and Bank Name.',false); return; }
+  } else if (method==='bank_transfer') {
+    details={bank_name:document.getElementById('bank-name').value,reference_number:document.getElementById('bank-ref').value,branch:document.getElementById('bank-branch').value,transfer_date:document.getElementById('bank-date').value};
+    if (!details.reference_number||!details.bank_name) { showMsg('cash-msg','Please fill in Bank Name and Reference Number.',false); return; }
   }
+  try {
+    var res=await fetch(API+'/admin/fees/'+feeId+'/pay',{method:'PUT',headers:{'Content-Type':'application/json'},body:JSON.stringify({amount_paid:amount,payment_method:method,payment_details:details,requester_code:myCode})});
+    var data=await res.json();
+    var label=method==='cheque'?'Cheque':(method==='bank_transfer'?'Bank Transfer':'Cash');
+    showMsg('cash-msg',res.ok?label+' payment of KSh '+parseFloat(amount).toLocaleString()+' recorded!':data.error,res.ok);
+    if (res.ok) { loadStudentFees(); loadFeesOverview(); }
+  } catch(e) { showMsg('cash-msg','Connection error',false); }
+}
 
-  /* ===== TIMETABLE ===== */
-  async function addTimetable() {
-    var body = { unit_name: document.getElementById('tt-unit').value, day: document.getElementById('tt-day').value, start_time: document.getElementById('tt-start').value, end_time: document.getElementById('tt-end').value, room: document.getElementById('tt-room').value, semester: document.getElementById('tt-semester').value, requester_code: myCode };
-    try { var res = await fetch(API + '/admin/timetable', { method: 'POST', headers: { 'Content-Type': 'application/json' }, body: JSON.stringify(body) }); var data = await res.json(); showMsg('tt-msg', res.ok ? 'Entry added!' : data.error, res.ok); if (res.ok) loadTimetableList(); } catch (e) { showMsg('tt-msg', 'Connection error', false); }
-  }
+async function addFee() {
+  var body={student_id:document.getElementById('fee-id').value,amount:document.getElementById('fee-amount').value,semester:document.getElementById('fee-semester').value,due_date:document.getElementById('fee-due').value,requester_code:myCode};
+  try { var res=await fetch(API+'/admin/fees',{method:'POST',headers:{'Content-Type':'application/json'},body:JSON.stringify(body)}); var data=await res.json(); showMsg('fee-msg',res.ok?'Fee record added!':data.error,res.ok); if (res.ok) loadFeesOverview(); } catch(e) { showMsg('fee-msg','Connection error',false); }
+}
 
-  async function loadTimetableList() {
-    var el = document.getElementById('timetable-list');
-    try {
-      var res = await fetch(API + '/admin/timetable/all?requester_code=' + myCode);
-      var data = await res.json();
-      if (!res.ok) { el.innerHTML = '<p style="color:red;font-size:13px">' + data.error + '</p>'; return; }
-      if (!data.length) { el.innerHTML = '<p style="color:#888;font-size:13px">No timetable entries yet.</p>'; return; }
-      var rows = '';
-      for (var i = 0; i < data.length; i++) {
-        var t = data[i];
-        rows += '<tr><td>' + t.unit_name + '</td><td>' + t.day + '</td><td>' + t.start_time + '</td><td>' + t.end_time + '</td><td>' + t.room + '</td><td>' + t.semester + '</td><td><button class="red-btn" onclick="deleteTimetableEntry(' + t.id + ')">Delete</button></td></tr>';
-      }
-      el.innerHTML = '<table><tr><th>Unit</th><th>Day</th><th>Start</th><th>End</th><th>Room</th><th>Semester</th><th></th></tr>' + rows + '</table>';
-    } catch (e) { el.innerHTML = '<p style="color:red;font-size:13px">Could not load.</p>'; }
-  }
+async function bulkAddFee() {
+  var body={course:document.getElementById('bulk-course').value,amount:document.getElementById('bulk-amount').value,semester:document.getElementById('bulk-semester').value,due_date:document.getElementById('bulk-due').value,requester_code:myCode};
+  try { var res=await fetch(API+'/admin/fees/bulk',{method:'POST',headers:{'Content-Type':'application/json'},body:JSON.stringify(body)}); var data=await res.json(); showMsg('bulk-msg',res.ok?data.message:data.error,res.ok); if (res.ok) loadFeesOverview(); } catch(e) { showMsg('bulk-msg','Connection error',false); }
+}
 
-  async function deleteTimetableEntry(id) {
-    if (!confirm('Delete this timetable entry?')) return;
-    try {
-      var res = await fetch(API + '/admin/timetable/' + id, { method: 'DELETE', headers: { 'Content-Type': 'application/json' }, body: JSON.stringify({ requester_code: myCode }) });
-      var data = await res.json();
-      if (res.ok) loadTimetableList(); else alert(data.error);
-    } catch (e) { alert('Connection error.'); }
-  }
+/* EXAM FEES */
+function switchExamType(type,evt) {
+  currentExamType=type;
+  document.querySelectorAll('#exams .subnav button').forEach(function(b){b.classList.remove('active');});
+  if (evt) evt.target.classList.add('active');
+}
+function examTypeLabel(t) { if (t==='national_exam') return 'National Exam'; if (t==='internal_exam') return 'Internal Exam'; return 'Ream Papers & Files'; }
 
-  /* ===== STUDENTS ===== */
-  async function registerStudent() {
-    var body = { student_id: document.getElementById('reg-id').value, full_name: document.getElementById('reg-name').value, email: document.getElementById('reg-email').value, phone: document.getElementById('reg-phone').value, course: document.getElementById('reg-course').value, password: document.getElementById('reg-password').value };
-    try { var res = await fetch(API + '/auth/register', { method: 'POST', headers: { 'Content-Type': 'application/json' }, body: JSON.stringify(body) }); var data = await res.json(); showMsg('reg-msg', res.ok ? 'Student registered!' : data.error, res.ok); if (res.ok) loadStudents(); } catch (e) { showMsg('reg-msg', 'Connection error', false); }
-  }
+async function addExamFee() {
+  var body={student_id:document.getElementById('exam-fee-id').value,fee_type:currentExamType,amount:document.getElementById('exam-fee-amount').value,semester:document.getElementById('exam-fee-semester').value,requester_code:myCode};
+  try { var res=await fetch(API+'/admin/exam-fees',{method:'POST',headers:{'Content-Type':'application/json'},body:JSON.stringify(body)}); var data=await res.json(); showMsg('exam-fee-msg',res.ok?'Arrears record added!':data.error,res.ok); } catch(e) { showMsg('exam-fee-msg','Connection error',false); }
+}
 
-  async function loadStudents() {
-    var el = document.getElementById('students-list');
-    try {
-      var res = await fetch(API + '/admin/students?requester_code=' + myCode);
-      var data = await res.json();
-      if (!res.ok) { el.innerHTML = '<p style="color:red;font-size:13px">' + data.error + '</p>'; return; }
-      if (!data.length) { el.innerHTML = '<p style="color:#888;font-size:13px">No students yet.</p>'; return; }
-      var rows = '';
-      for (var i = 0; i < data.length; i++) {
-        var s = data[i];
-        rows += '<tr><td>' + s.student_id + '</td><td>' + s.full_name + '</td><td id="course-display-' + s.student_id + '"><span class="editable-balance" onclick="editCourse(\'' + s.student_id + '\', \'' + (s.course || '') + '\')">' + (s.course || '—') + ' &#9998;</span></td><td>' + s.email + '</td><td>' + (s.phone || '—') + '</td><td><button class="red-btn" onclick="deleteStudent(\'' + s.student_id + '\')">Delete</button></td></tr>';
-      }
-      el.innerHTML = '<table><tr><th>ID</th><th>Name</th><th>Course</th><th>Email</th><th>Phone</th><th></th></tr>' + rows + '</table>';
-    } catch (e) { el.innerHTML = '<p style="color:red;font-size:13px">Could not load.</p>'; }
-  }
+async function loadExamFeesForStudent() {
+  var sid=document.getElementById('exam-pay-student-id').value;
+  var el=document.getElementById('exam-fee-records');
+  var form=document.getElementById('exam-pay-form');
+  form.classList.add('hidden'); el.innerHTML='Loading...';
+  try {
+    var res=await fetch(API+'/admin/exam-fees/student/'+sid);
+    var data=await res.json();
+    if (!data.length) { el.innerHTML='<p style="color:#888;font-size:13px">No exam/materials fee records.</p>'; return; }
+    var rows='',opts='';
+    for (var i=0;i<data.length;i++) {
+      var f=data[i];
+      rows+='<tr><td>'+examTypeLabel(f.fee_type)+'</td><td>'+f.semester+'</td><td>KSh '+parseFloat(f.amount).toLocaleString()+'</td><td style="color:#0F6E56">KSh '+parseFloat(f.paid).toLocaleString()+'</td><td style="color:#A32D2D;font-weight:600">KSh '+parseFloat(f.balance).toLocaleString()+'</td><td><button class="red-btn" onclick="deleteExamFee('+f.id+')">Delete</button></td></tr>';
+      opts+='<option value="'+f.id+'">'+examTypeLabel(f.fee_type)+' — '+f.semester+' — Bal: KSh '+parseFloat(f.balance).toLocaleString()+'</option>';
+    }
+    el.innerHTML='<table><tr><th>Type</th><th>Semester</th><th>Total</th><th>Paid</th><th>Balance</th><th></th></tr>'+rows+'</table>';
+    document.getElementById('exam-pay-fee-id').innerHTML=opts;
+    form.classList.remove('hidden');
+  } catch(e) { el.innerHTML='<p style="color:red;font-size:13px">Connection error.</p>'; }
+}
 
-  function editCourse(studentId, currentCourse) {
-    var cell = document.getElementById('course-display-' + studentId);
-    cell.innerHTML = '<input type="text" id="course-input-' + studentId + '" value="' + currentCourse + '" style="width:180px;padding:4px 8px;font-size:12px;margin:0;border:1px solid #0F6E56;border-radius:5px" />' +
-      '<button onclick="saveCourse(\'' + studentId + '\')" style="margin-left:4px;padding:4px 10px;background:#0F6E56;color:white;border:none;border-radius:5px;font-size:11px;cursor:pointer">Save</button>' +
-      '<button onclick="loadStudents()" style="margin-left:2px;padding:4px 8px;background:#eee;color:#555;border:none;border-radius:5px;font-size:11px;cursor:pointer">Cancel</button>';
-    document.getElementById('course-input-' + studentId).focus();
-    document.getElementById('course-input-' + studentId).select();
-  }
+async function deleteExamFee(id) {
+  if (!confirm('Delete this exam fee record?')) return;
+  try { var res=await fetch(API+'/admin/exam-fees/'+id,{method:'DELETE',headers:{'Content-Type':'application/json'},body:JSON.stringify({requester_code:myCode})}); var data=await res.json(); if (res.ok) loadExamFeesForStudent(); else alert(data.error); } catch(e) { alert('Connection error.'); }
+}
 
-  async function saveCourse(studentId) {
-    var newCourse = document.getElementById('course-input-' + studentId).value.trim();
-    if (!newCourse) { alert('Please enter a course name.'); return; }
-    try {
-      var res = await fetch(API + '/admin/students/' + studentId + '/course', {
-        method: 'PUT',
-        headers: { 'Content-Type': 'application/json' },
-        body: JSON.stringify({ course: newCourse, requester_code: myCode })
-      });
-      var data = await res.json();
-      if (res.ok) { loadStudents(); } else { alert('Error: ' + data.error); }
-    } catch (e) { alert('Connection error.'); }
-  }
+async function recordExamPayment() {
+  var feeId=document.getElementById('exam-pay-fee-id').value;
+  var amount=document.getElementById('exam-pay-amount').value;
+  try { var res=await fetch(API+'/admin/exam-fees/'+feeId+'/pay',{method:'PUT',headers:{'Content-Type':'application/json'},body:JSON.stringify({amount_paid:amount,requester_code:myCode})}); var data=await res.json(); showMsg('exam-pay-msg',res.ok?'Payment recorded!':data.error,res.ok); if (res.ok) loadExamFeesForStudent(); } catch(e) { showMsg('exam-pay-msg','Connection error',false); }
+}
 
-  async function deleteStudent(studentId) {
-    if (!confirm('Permanently delete student ' + studentId + '? All their records will also be deleted.')) return;
-    try {
-      var res = await fetch(API + '/admin/students/' + studentId, { method: 'DELETE', headers: { 'Content-Type': 'application/json' }, body: JSON.stringify({ requester_code: myCode }) });
-      var data = await res.json();
-      if (res.ok) loadStudents(); else alert(data.error);
-    } catch (e) { alert('Connection error.'); }
-  }
+/* HOSTEL */
+async function registerHostel() {
+  var body={student_id:document.getElementById('hostel-id').value,room_details:document.getElementById('hostel-room').value,amount:document.getElementById('hostel-amount').value,semester:document.getElementById('hostel-semester').value,requester_code:myCode};
+  try { var res=await fetch(API+'/admin/hostel',{method:'POST',headers:{'Content-Type':'application/json'},body:JSON.stringify(body)}); var data=await res.json(); showMsg('hostel-msg',res.ok?'Student registered to hostel!':data.error,res.ok); if (res.ok) loadHostelList(); } catch(e) { showMsg('hostel-msg','Connection error',false); }
+}
 
-  /* ===== EMPLOYEES ===== */
-  async function createEmployee() {
-    var body = { employee_code: document.getElementById('emp-new-code').value, full_name: document.getElementById('emp-new-name').value, id_number: document.getElementById('emp-new-idnum').value, role: document.getElementById('emp-new-role').value, requester_code: myCode };
-    try { var res = await fetch(API + '/employees/create', { method: 'POST', headers: { 'Content-Type': 'application/json' }, body: JSON.stringify(body) }); var data = await res.json(); showMsg('emp-msg', res.ok ? 'Employee added!' : data.error, res.ok); if (res.ok) loadEmployees(); } catch (e) { showMsg('emp-msg', 'Connection error', false); }
-  }
+async function loadHostelList() {
+  var el=document.getElementById('hostel-list');
+  try {
+    var res=await fetch(API+'/admin/hostel/all?requester_code='+myCode);
+    var data=await res.json();
+    if (!res.ok) { el.innerHTML='<p style="color:red;font-size:13px">'+data.error+'</p>'; return; }
+    if (!data.length) { el.innerHTML='<p style="color:#888;font-size:13px">No students registered to hostel yet.</p>'; return; }
+    var rows='';
+    for (var i=0;i<data.length;i++) {
+      var h=data[i];
+      rows+='<tr><td>'+h.student_id+'</td><td>'+h.full_name+'</td><td>'+(h.room_details||'—')+'</td><td>KSh '+parseFloat(h.amount).toLocaleString()+'</td><td style="color:#0F6E56">KSh '+parseFloat(h.paid).toLocaleString()+'</td><td style="color:#A32D2D;font-weight:600">KSh '+parseFloat(h.balance).toLocaleString()+'</td><td><button class="red-btn" onclick="removeFromHostel(\''+h.student_id+'\')">Remove</button></td></tr>';
+    }
+    el.innerHTML='<table><tr><th>ID</th><th>Name</th><th>Room</th><th>Total</th><th>Paid</th><th>Balance</th><th></th></tr>'+rows+'</table>';
+  } catch(e) { el.innerHTML='<p style="color:red;font-size:13px">Could not load.</p>'; }
+}
 
-  async function loadEmployees() {
-    var el = document.getElementById('employees-list');
-    try {
-      var res = await fetch(API + '/employees/all?requester_code=' + myCode);
-      var data = await res.json();
-      if (!res.ok) { el.innerHTML = '<p style="color:red;font-size:13px">' + data.error + '</p>'; return; }
-      var rows = '';
-      for (var i = 0; i < data.length; i++) {
-        var e = data[i];
-        var pillClass = e.role === 'chief_admin' ? 'chief' : 'teacher';
-        var pillText = e.role === 'chief_admin' ? 'Chief Admin' : 'Teacher';
-        var delBtn = e.employee_code !== myCode ? '<button class="red-btn" onclick="deleteEmployee(\'' + e.employee_code + '\')">Delete</button>' : '<span style="font-size:11px;color:#888">You</span>';
-        rows += '<tr><td>' + e.employee_code + '</td><td>' + e.full_name + '</td><td><span class="pill ' + pillClass + '">' + pillText + '</span></td><td>' + delBtn + '</td></tr>';
-      }
-      el.innerHTML = '<table><tr><th>Code</th><th>Name</th><th>Role</th><th></th></tr>' + rows + '</table>';
-    } catch (e) { el.innerHTML = '<p style="color:red;font-size:13px">Could not load.</p>'; }
-  }
+async function removeFromHostel(studentId) {
+  if (!confirm('Remove this student from hostel?')) return;
+  try { var res=await fetch(API+'/admin/hostel/'+studentId,{method:'DELETE',headers:{'Content-Type':'application/json'},body:JSON.stringify({requester_code:myCode})}); var data=await res.json(); if (res.ok) loadHostelList(); else alert(data.error); } catch(e) { alert('Connection error.'); }
+}
 
-  async function deleteEmployee(code) {
-    if (!confirm('Delete employee account ' + code + '?')) return;
-    try {
-      var res = await fetch(API + '/employees/' + code, { method: 'DELETE', headers: { 'Content-Type': 'application/json' }, body: JSON.stringify({ requester_code: myCode }) });
-      var data = await res.json();
-      if (res.ok) loadEmployees(); else alert(data.error);
-    } catch (e) { alert('Connection error.'); }
-  }
+async function recordHostelPayment() {
+  var sid=document.getElementById('hostel-pay-id').value;
+  var amount=document.getElementById('hostel-pay-amount').value;
+  try {
+    var allRes=await fetch(API+'/admin/hostel/all?requester_code='+myCode);
+    var all=await allRes.json();
+    var match=null;
+    for (var i=0;i<all.length;i++) { if (all[i].student_id===sid) { match=all[i]; break; } }
+    if (!match) { showMsg('hostel-pay-msg','Student is not registered to hostel.',false); return; }
+    var res=await fetch(API+'/admin/hostel/'+match.id+'/pay',{method:'PUT',headers:{'Content-Type':'application/json'},body:JSON.stringify({amount_paid:amount,requester_code:myCode})});
+    var data=await res.json();
+    showMsg('hostel-pay-msg',res.ok?'Payment recorded!':data.error,res.ok);
+    if (res.ok) loadHostelList();
+  } catch(e) { showMsg('hostel-pay-msg','Connection error',false); }
+}
 
-  function logout() {
-    myCode = ''; myRole = '';
-    document.getElementById('admin-page').style.display = 'none';
-    document.getElementById('login-page').style.display = 'flex';
-    document.getElementById('emp-code').value = '';
-    document.getElementById('emp-id').value = '';
-  }
+/* TIMETABLE */
+async function addTimetable() {
+  var body={unit_name:document.getElementById('tt-unit').value,course:document.getElementById('tt-course').value,day:document.getElementById('tt-day').value,start_time:document.getElementById('tt-start').value,end_time:document.getElementById('tt-end').value,room:document.getElementById('tt-room').value,semester:document.getElementById('tt-semester').value,requester_code:myCode};
+  if (!body.course) { showMsg('tt-msg','Please enter a course name.',false); return; }
+  try { var res=await fetch(API+'/admin/timetable',{method:'POST',headers:{'Content-Type':'application/json'},body:JSON.stringify(body)}); var data=await res.json(); showMsg('tt-msg',res.ok?'Entry added!':data.error,res.ok); if (res.ok) loadTimetableList(); } catch(e) { showMsg('tt-msg','Connection error',false); }
+}
+
+async function loadTimetableList() {
+  var el=document.getElementById('timetable-list');
+  try {
+    var res=await fetch(API+'/admin/timetable/all?requester_code='+myCode);
+    var data=await res.json();
+    if (!res.ok) { el.innerHTML='<p style="color:red;font-size:13px">'+data.error+'</p>'; return; }
+    if (!data.length) { el.innerHTML='<p style="color:#888;font-size:13px">No timetable entries yet.</p>'; return; }
+    var rows='';
+    for (var i=0;i<data.length;i++) {
+      var t=data[i];
+      rows+='<tr><td>'+t.unit_name+'</td><td>'+(t.course||'—')+'</td><td>'+t.day+'</td><td>'+t.start_time+'</td><td>'+t.end_time+'</td><td>'+t.room+'</td><td>'+t.semester+'</td><td><button class="red-btn" onclick="deleteTimetableEntry('+t.id+')">Delete</button></td></tr>';
+    }
+    el.innerHTML='<table><tr><th>Unit</th><th>Course</th><th>Day</th><th>Start</th><th>End</th><th>Room</th><th>Semester</th><th></th></tr>'+rows+'</table>';
+  } catch(e) { el.innerHTML='<p style="color:red;font-size:13px">Could not load.</p>'; }
+}
+
+async function deleteTimetableEntry(id) {
+  if (!confirm('Delete this timetable entry?')) return;
+  try { var res=await fetch(API+'/admin/timetable/'+id,{method:'DELETE',headers:{'Content-Type':'application/json'},body:JSON.stringify({requester_code:myCode})}); var data=await res.json(); if (res.ok) loadTimetableList(); else alert(data.error); } catch(e) { alert('Connection error.'); }
+}
+
+/* STUDENTS */
+async function registerStudent() {
+  var body={student_id:document.getElementById('reg-id').value,full_name:document.getElementById('reg-name').value,email:document.getElementById('reg-email').value,phone:document.getElementById('reg-phone').value,course:document.getElementById('reg-course').value,password:document.getElementById('reg-password').value};
+  try { var res=await fetch(API+'/auth/register',{method:'POST',headers:{'Content-Type':'application/json'},body:JSON.stringify(body)}); var data=await res.json(); showMsg('reg-msg',res.ok?'Student registered!':data.error,res.ok); if (res.ok) loadStudents(); } catch(e) { showMsg('reg-msg','Connection error',false); }
+}
+
+async function loadStudents() {
+  var el=document.getElementById('students-list');
+  try {
+    var res=await fetch(API+'/admin/students?requester_code='+myCode);
+    var data=await res.json();
+    if (!res.ok) { el.innerHTML='<p style="color:red;font-size:13px">'+data.error+'</p>'; return; }
+    if (!data.length) { el.innerHTML='<p style="color:#888;font-size:13px">No students yet.</p>'; return; }
+    var rows='';
+    for (var i=0;i<data.length;i++) {
+      var s=data[i];
+      rows+='<tr>';
+      rows+='<td>'+s.student_id+'</td>';
+      rows+='<td>'+s.full_name+'</td>';
+      rows+='<td id="course-cell-'+s.student_id+'"><span>'+(s.course||'—')+'</span> <button class="edit-btn" onclick="editCourse(\''+s.student_id+'\',\''+(s.course||'').replace(/\'/g,'')+'\')" >&#9998; Edit</button></td>';
+      rows+='<td>'+s.email+'</td>';
+      rows+='<td>'+(s.phone||'—')+'</td>';
+      rows+='<td><button class="red-btn" onclick="deleteStudent(\''+s.student_id+'\')">Delete</button></td>';
+      rows+='</tr>';
+    }
+    el.innerHTML='<table><tr><th>ID</th><th>Name</th><th>Course</th><th>Email</th><th>Phone</th><th></th></tr>'+rows+'</table>';
+  } catch(e) { el.innerHTML='<p style="color:red;font-size:13px">Could not load.</p>'; }
+}
+
+function editCourse(studentId,currentCourse) {
+  var cell=document.getElementById('course-cell-'+studentId);
+  cell.innerHTML='<input class="inline-input" type="text" id="course-input-'+studentId+'" value="'+currentCourse+'" /> <button class="save-btn" onclick="saveCourse(\''+studentId+'\')">Save</button> <button class="cancel-btn" onclick="loadStudents()">Cancel</button>';
+  document.getElementById('course-input-'+studentId).focus();
+}
+
+async function saveCourse(studentId) {
+  var input=document.getElementById('course-input-'+studentId);
+  if (!input) { alert('Input not found.'); return; }
+  var newCourse=input.value.trim();
+  if (!newCourse) { alert('Please enter a course name.'); return; }
+  try {
+    var res=await fetch(API+'/admin/students/'+studentId+'/course',{method:'PUT',headers:{'Content-Type':'application/json'},body:JSON.stringify({course:newCourse,requester_code:myCode})});
+    var data=await res.json();
+    if (res.ok) loadStudents(); else alert('Error: '+data.error);
+  } catch(e) { alert('Connection error.'); }
+}
+
+async function deleteStudent(studentId) {
+  if (!confirm('Permanently delete student '+studentId+'? All their records will also be deleted.')) return;
+  try { var res=await fetch(API+'/admin/students/'+studentId,{method:'DELETE',headers:{'Content-Type':'application/json'},body:JSON.stringify({requester_code:myCode})}); var data=await res.json(); if (res.ok) loadStudents(); else alert(data.error); } catch(e) { alert('Connection error.'); }
+}
+
+/* EMPLOYEES */
+async function createEmployee() {
+  var body={employee_code:document.getElementById('emp-new-code').value,full_name:document.getElementById('emp-new-name').value,id_number:document.getElementById('emp-new-idnum').value,role:document.getElementById('emp-new-role').value,requester_code:myCode};
+  try { var res=await fetch(API+'/employees/create',{method:'POST',headers:{'Content-Type':'application/json'},body:JSON.stringify(body)}); var data=await res.json(); showMsg('emp-msg',res.ok?'Employee added!':data.error,res.ok); if (res.ok) loadEmployees(); } catch(e) { showMsg('emp-msg','Connection error',false); }
+}
+
+async function loadEmployees() {
+  var el=document.getElementById('employees-list');
+  try {
+    var res=await fetch(API+'/employees/all?requester_code='+myCode);
+    var data=await res.json();
+    if (!res.ok) { el.innerHTML='<p style="color:red;font-size:13px">'+data.error+'</p>'; return; }
+    var rows='';
+    for (var i=0;i<data.length;i++) {
+      var e=data[i];
+      var pillClass=e.role==='chief_admin'?'chief':'teacher';
+      var pillText=e.role==='chief_admin'?'Chief Admin':'Teacher';
+      var delBtn=e.employee_code!==myCode?'<button class="red-btn" onclick="deleteEmployee(\''+e.employee_code+'\')">Delete</button>':'<span style="font-size:11px;color:#888">You</span>';
+      rows+='<tr><td>'+e.employee_code+'</td><td>'+e.full_name+'</td><td><span class="pill '+pillClass+'">'+pillText+'</span></td><td>'+delBtn+'</td></tr>';
+    }
+    el.innerHTML='<table><tr><th>Code</th><th>Name</th><th>Role</th><th></th></tr>'+rows+'</table>';
+  } catch(e) { el.innerHTML='<p style="color:red;font-size:13px">Could not load.</p>'; }
+}
+
+async function deleteEmployee(code) {
+  if (!confirm('Delete employee account '+code+'?')) return;
+  try { var res=await fetch(API+'/employees/'+code,{method:'DELETE',headers:{'Content-Type':'application/json'},body:JSON.stringify({requester_code:myCode})}); var data=await res.json(); if (res.ok) loadEmployees(); else alert(data.error); } catch(e) { alert('Connection error.'); }
+}
+
+/* NOTICES */
+document.addEventListener('DOMContentLoaded', function() {
+  var sel = document.getElementById('notice-target');
+  if (sel) sel.addEventListener('change', function() {
+    document.getElementById('notice-course-field').classList.toggle('hidden', sel.value !== 'course');
+  });
+});
+
+async function postNotice() {
+  var title=document.getElementById('notice-title').value.trim();
+  var message=document.getElementById('notice-message').value.trim();
+  var targetSel=document.getElementById('notice-target').value;
+  var target=targetSel==='course'?document.getElementById('notice-course').value.trim():'all';
+  if (!title||!message) { showMsg('notice-msg','Please fill in title and message.',false); return; }
+  if (targetSel==='course'&&!target) { showMsg('notice-msg','Please enter a course name.',false); return; }
+  try {
+    var res=await fetch(API+'/admin/notices',{method:'POST',headers:{'Content-Type':'application/json'},body:JSON.stringify({title:title,message:message,target_course:target,requester_code:myCode})});
+    var data=await res.json();
+    showMsg('notice-msg',res.ok?'Notice posted!':data.error,res.ok);
+    if (res.ok) { document.getElementById('notice-title').value=''; document.getElementById('notice-message').value=''; loadNotices(); }
+  } catch(e) { showMsg('notice-msg','Connection error',false); }
+}
+
+async function loadNotices() {
+  var el=document.getElementById('notices-list');
+  try {
+    var res=await fetch(API+'/admin/notices/all?requester_code='+myCode);
+    var data=await res.json();
+    if (!res.ok) { el.innerHTML='<p style="color:red;font-size:13px">'+data.error+'</p>'; return; }
+    if (!data.length) { el.innerHTML='<p style="color:#888;font-size:13px">No notices posted yet.</p>'; return; }
+    var html='';
+    for (var i=0;i<data.length;i++) {
+      var n=data[i];
+      var target=n.target_course==='all'?'All Students':'Course: '+n.target_course;
+      html+='<div class="notice-card"><h4>'+n.title+'</h4><p>'+n.message+'</p><div style="display:flex;justify-content:space-between;align-items:center"><span class="notice-meta">'+new Date(n.created_at).toLocaleDateString()+' &bull; '+target+'</span><button class="red-btn" onclick="deleteNotice('+n.id+')">Delete</button></div></div>';
+    }
+    el.innerHTML=html;
+  } catch(e) { el.innerHTML='<p style="color:red;font-size:13px">Could not load.</p>'; }
+}
+
+async function deleteNotice(id) {
+  if (!confirm('Delete this notice?')) return;
+  try { var res=await fetch(API+'/admin/notices/'+id,{method:'DELETE',headers:{'Content-Type':'application/json'},body:JSON.stringify({requester_code:myCode})}); var data=await res.json(); if (res.ok) loadNotices(); else alert(data.error); } catch(e) { alert('Connection error.'); }
+}
+
+function logout() {
+  myCode=''; myRole='';
+  document.getElementById('admin-page').style.display='none';
+  document.getElementById('login-page').style.display='flex';
+  document.getElementById('emp-code').value='';
+  document.getElementById('emp-id').value='';
+}
 </script>
 </body>
 </html>
